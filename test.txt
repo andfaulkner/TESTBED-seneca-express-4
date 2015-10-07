@@ -1,0 +1,81 @@
+[23:20:16] Using gulpfile ~/Projects/testbed/testbed-seneca--4/gulpfile.js
+[23:20:16] Starting 'server'...
+[23:20:16] Finished 'server' after 7.55 ms
+[23:20:16] [nodemon] 1.7.1
+[23:20:16] [nodemon] to restart at any time, enter `rs`
+[23:20:16] [nodemon] watching: /home/andfaulkner/Projects/testbed/testbed-seneca--4/server/**/* /home/andfaulkner/Projects/testbed/testbed-seneca--4/config/**/* server.js
+[23:20:16] [nodemon] starting `node --harmony --harmony_modules --stack-trace-limit=1000 server.js`
+|09/06--23:20:18| - info: /home/andfaulkner/Projects/testbed/testbed-seneca--4/.build
+      40 z2/- INFO	hello	Seneca/0.7.1/z2/-	at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/launch-seneca.js:11:31)
+
+Seneca Options (z2/-): before plugins
+===
+
+{ tag: '-',
+  idlen: 2,
+  timeout: 11111,
+  default_plugins: { basic: true, 'mem-store': true, transport: true, web: true },
+  repl: { port: 30303, host: null },
+  debug: 
+   { fragile: false,
+     undead: false,
+     print: { options: true },
+     act_caller: true,
+     short_logs: true,
+     callpoint: true,
+     repl: { post: 30303, host: '127.0.0.1' } },
+  strict: { result: true, fixedargs: true, add: false },
+  actcache: { active: true, size: 11111 },
+  trace: { act: false, stack: false, unknown: 'warn' },
+  stats: { size: 1024, interval: 60000, running: false },
+  deathdelay: 11111,
+  admin: { local: false, prefix: '/admin' },
+  plugin: {},
+  internal: 
+   { close_signals: { SIGHUP: true, SIGTERM: true, SIGINT: true, SIGBREAK: true },
+     actrouter: ,
+     subrouter:  },
+  status: { interval: 60000, running: false },
+  zig: {},
+  define_plugins: { basic: true },
+  log: {} }
+
+
+Seneca Options (z2/-): plugin: basic
+===
+
+{}
+
+
+Seneca Options (z2/-): plugin: transport
+===
+
+{}
+
+{ indent_size: 4,
+  indent_char: ' ',
+  preserve_newlines: true,
+  preserve_max_newlines: 'unlimited',
+  jslint_happy: false,
+  brace_style: 'collapse',
+  space_before_conditional: false }
+
+____________________________________________________________________________________________________
+____________________________________________________________________________________________________
+________________UNCAUGHT EXCEPTION________________
+FULL STACKTRACE:
+____________________________________________________________________________________________________ 
+((FULL STACKTRACE ABOVE))
+
+ERROR:
+[TypeError: path must be a string]
+____________________________________________________________________________________________________
+____________________________________________________________________________________________________
+[23:20:19] [nodemon] app crashed - waiting for file changes before starting...
+
+
+
+
+|09/06--23:20:19| - error: uncaughtException: path must be a string date=Tue Oct 06 2015 23:20:19 GMT-0400 (EDT), pid=10373, uid=1000, gid=1000, cwd=/home/andfaulkner/Projects/testbed/testbed-seneca--4, execPath=/home/andfaulkner/.nvm/versions/node/v4.1.0/bin/node, version=v4.1.0, argv=[/home/andfaulkner/.nvm/versions/node/v4.1.0/bin/node, /home/andfaulkner/Projects/testbed/testbed-seneca--4/server.js], rss=76050432, heapTotal=64939776, heapUsed=30881744, loadavg=[2.5869140625, 2.39599609375, 2.32861328125], uptime=86578, trace=[column=5, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js, function=, line=39, method=null, native=false, column=4, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js, function=, line=58, method=null, native=false, column=7, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=Object.require.extensions.(anonymous function) [as .js], line=214, method=require.extensions.(anonymous function) [as .js], native=false, column=18, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/express/express-plugin.js, function=, line=1, method=null, native=false, column=5, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=normalLoader, line=199, method=null, native=false, column=7, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=Object.require.extensions.(anonymous function) [as .js], line=216, method=require.extensions.(anonymous function) [as .js], native=false, column=12, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/launch-seneca.js, function=, line=34, method=null, native=false, column=5, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=normalLoader, line=199, method=null, native=false, column=7, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=Object.require.extensions.(anonymous function) [as .js], line=216, method=require.extensions.(anonymous function) [as .js], native=false, column=14, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/server.js, function=, line=44, method=null, native=false], stack=[TypeError: path must be a string,     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js:39:5),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js:58:4),     at Object.require.extensions.(anonymous function) [as .js] (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:214:7),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/express/express-plugin.js:1:18),     at normalLoader (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:199:5),     at Object.require.extensions.(anonymous function) [as .js] (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:216:7),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/launch-seneca.js:34:12),     at normalLoader (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:199:5),     at Object.require.extensions.(anonymous function) [as .js] (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:216:7),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/server.js:44:14)]
+|09/06--23:20:19| - error: [seneca] uncaughtException: path must be a string date=Tue Oct 06 2015 23:20:19 GMT-0400 (EDT), pid=10373, uid=1000, gid=1000, cwd=/home/andfaulkner/Projects/testbed/testbed-seneca--4, execPath=/home/andfaulkner/.nvm/versions/node/v4.1.0/bin/node, version=v4.1.0, argv=[/home/andfaulkner/.nvm/versions/node/v4.1.0/bin/node, /home/andfaulkner/Projects/testbed/testbed-seneca--4/server.js], rss=76324864, heapTotal=64939776, heapUsed=31856744, loadavg=[2.5869140625, 2.39599609375, 2.32861328125], uptime=86578, trace=[column=5, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js, function=, line=39, method=null, native=false, column=4, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js, function=, line=58, method=null, native=false, column=7, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=Object.require.extensions.(anonymous function) [as .js], line=214, method=require.extensions.(anonymous function) [as .js], native=false, column=18, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/express/express-plugin.js, function=, line=1, method=null, native=false, column=5, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=normalLoader, line=199, method=null, native=false, column=7, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=Object.require.extensions.(anonymous function) [as .js], line=216, method=require.extensions.(anonymous function) [as .js], native=false, column=12, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/launch-seneca.js, function=, line=34, method=null, native=false, column=5, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=normalLoader, line=199, method=null, native=false, column=7, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js, function=Object.require.extensions.(anonymous function) [as .js], line=216, method=require.extensions.(anonymous function) [as .js], native=false, column=14, file=/home/andfaulkner/Projects/testbed/testbed-seneca--4/server.js, function=, line=44, method=null, native=false], stack=[TypeError: path must be a string,     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js:39:5),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/jsbeautify/lib/main.js:58:4),     at Object.require.extensions.(anonymous function) [as .js] (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:214:7),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/express/express-plugin.js:1:18),     at normalLoader (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:199:5),     at Object.require.extensions.(anonymous function) [as .js] (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:216:7),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/launch-seneca.js:34:12),     at normalLoader (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:199:5),     at Object.require.extensions.(anonymous function) [as .js] (/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/babel-core/lib/api/register/node.js:216:7),     at Object.<anonymous> (/home/andfaulkner/Projects/testbed/testbed-seneca--4/server.js:44:14)]
+|09/06--23:20:19| - error: TypeError: path must be a string
