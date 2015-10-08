@@ -12,6 +12,9 @@ var config = require('config/default');
 //Create Seneca instance
 var seneca = require('seneca')(config.seneca);
 
+console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ seneca.start ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+console.log(seneca.start());
+console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
 
 //--------------------------------------------------------------------//
 //********************************************************************//
@@ -19,7 +22,28 @@ var seneca = require('seneca')(config.seneca);
 //*********************************//
 seneca
     .use(require('server/microservices/express/express-plugin'))
-    .use(require('server/microservices/log-msg-plugin/log-msg-plugin'));
+    .use(require('server/microservices/log-msg-plugin/log-msg-plugin'))
+    .use(require('server/microservices/api/api'))
+    .use(require('server/microservices/api/math_api'))
+    .use(require('server/microservices/ultra-basic/basic-plugin-1'));
+
+seneca.act(
+    {role:'test-plugins',cmd:'ret-random-num',tag:'tp-rrn'},
+    function(err, msg){
+        if (err) console.log(err);
+        console.log(msg);
+        return;
+    }
+);
+
+seneca.act(
+    {role:'test-plugins',cmd:'ret-random-num',tag:'tp-rrn2'},
+    function(err, msg){
+        if (err) console.log(err);
+        console.log(msg);
+        return;
+    }
+);
 
 /**
  * Response from {role:'test_plugin', cmd:'cmd1'}
@@ -72,14 +96,19 @@ seneca.add({role:'math', cmd:'sum'}, function(msg, respond) {
     console.log(value);
 })
 .act({role:'basic', note:true, cmd:'pop', key:'list1'}, function(err, value){
-    console.log('role:basic,note:true,cmd:pop,key:list1');
-    console.log(value);
+    log.info('role:basic,note:true,cmd:pop,key:list1');
+    log.info(typeof value);
+    log.info(value);
 });
 
 log.cli.senecaMsgOut("DATA!!!");
 log.cli.senecaMsgOut({ arg1: 'key1' });
 log.cli.senecaMsgOut({ 'caller$': 'caller$! so it\'s a seneca object!', role: 'someRole'});
 log.cli.senecaMsgOut({ 'caller$': 'Action call arguments and location: Error: { init: \'log_msg\',  tag: undefined,  \'default$\': {},  \'gate$\': true,  \'fatal$\': true,  \'local$\': true }', role: 'someRole'});
+
+seneca.ready(function(err){
+    log.info('!!!!!!!!!!!!!!!!!!!! SENECA READY - in launch-seneca.js !!!!!!!!!!!!!!!!!!!!');
+})
 
 //@EXPORT seneca instance
 module.exports = seneca;

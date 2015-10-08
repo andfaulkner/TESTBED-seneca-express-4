@@ -25,9 +25,9 @@ module.exports = function log_msg(options) {
      * ARGS ACCEPTED (as properties in message object):
      *     data:  {String|Object|Function} - actual data to display on the CLI
      *     title: {String} - name in the log title heading,
-     *     opts: {Object}  - opts.doDir - do this if
-     *           doDir:      if true, log param data as obj (a la console.dir) {default: false}
-     *           isEndSpace: if true, add a blank space to the end of block    {default: false}
+     *     opts:  {Object} - options object:
+     *               doDir:      if true, log param data as obj (a la console.dir) {default: false}
+     *               isEndSpace: if true, add a blank space to the end of block    {default: false}
      *
      * CALLBACK:
      *     @param {Object} msg - Object used to make call. Contains the pattern itself, &

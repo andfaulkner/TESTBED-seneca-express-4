@@ -32,9 +32,17 @@ module.exports = {
         define_plugins: {
             basic: true
         },
+        zig: {
+            trace: true
+        },
+        trace:{
+            act:     false,
+            stack:   false,
+            unknown: 'warn'
+        },
         debug: {
             act_caller: true,
-            short_logs: true,
+            // short_logs: true,
             callpoint: true,
             print: {
                 options: true
@@ -43,6 +51,11 @@ module.exports = {
                 post: 30303,
                 host: '127.0.0.1'
             }
-        }
+        },
+        actcache: true,
+        // trace: {
+
+        // },
+        idlen: 4
     }
 };

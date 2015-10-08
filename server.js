@@ -42,7 +42,11 @@ log.info(path.join(__dirname, '.build'));
 
 
 //******************************* SENECA *******************************//
-var seneca = require('server/microservices/launch-seneca.js');
+var seneca = require('server/microservices/launch-seneca.js')
+    .ready(function(err){
+        console.dir(seneca);
+        console.log(seneca.start_time);
+    });
 //**********************************************************************//
 
 

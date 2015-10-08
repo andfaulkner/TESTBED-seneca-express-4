@@ -25,7 +25,6 @@
     "pg": "^4.4.2",
     "redis": "^2.1.0",
     "rootpath": "^0.1.2",
-    "seneca": "git://github.com/nherment/seneca.git#0.6.1_custom",
     "seneca-redis-store": "0.0.8",
     "string": "^3.3.1",
     "style-loader": "^0.12.4",
