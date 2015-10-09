@@ -26,6 +26,9 @@ Object.getPrototypeOf.toString = function objToStringPolyfill() {
 };
 //********************************************************************//
 
+GLOBAL._ = require('lodash');
+GLOBAL.async = require('async');
+
 //**************************** ERROR HANDLING ****************************//
 if (process.env.NODE_ENV !== 'production') {
     Error.stackTraceLimit = Infinity;
@@ -34,7 +37,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 GLOBAL.log = require('server/debug/winston-logger');
-GLOBAL._ = require('lodash');
 require('server/debug/uncaught-error-handler');
 //********************************************************************//
 
@@ -56,6 +58,7 @@ var express = require('express');
 var app = express()
     /* MIDDLEWARES GO HERE - EXAMPLES DIRECTLY BELOW */
     .use('/', express.static(path.join(__dirname, '.build')))
+    .use(seneca.export('web'))
     // .use('/api', restAPIRouter)
 
     //Build Express app itself (loads & runs a constructor module), serve over web

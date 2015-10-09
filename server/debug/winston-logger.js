@@ -64,7 +64,7 @@
             return new (winston.transports.File)({
                 label: (loggerTypeLabel || ''),
                 name: logNm,
-                level:logLvl,
+                level: logLvl,
                 filename: path.join(__projrootdir, 'logs', logFilePath),
                 handleExceptions: true,
                 json: opts.jsonOut || false,
@@ -102,6 +102,10 @@
                 //WARN --> FILE LOG
                 fileTransportFactory('warn', 'warn-log',
                                      'lvl4-warn-log.log'),
+
+                //WARN --> FILE LOG
+                fileTransportFactory('error', 'error-log',
+                                     'lvl5-error-log.log'),
 
                 //CONSOLE --> FILE LOG
                 fileTransportFactory(consoleLogLevel, 'console-log',

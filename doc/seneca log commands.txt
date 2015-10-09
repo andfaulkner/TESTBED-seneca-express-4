@@ -1,0 +1,1 @@
+node app.js --env=development --seneca.log=plugin:well
