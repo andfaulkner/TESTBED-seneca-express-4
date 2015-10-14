@@ -149,10 +149,17 @@ function setLocalSenActs() {
     //     role: 'someRole'
     // });
 
-    seneca.act('role:data_entity_test,cmd:cmd1', function(err, msg){
-        log.info(msg);
-    });
+    var entities = [];
 
+    for (var ii = 0; ii < 10; ii++){
+        seneca.act({ role: 'data_entity_test', cmd: 'newentity', entNum: ii }, function(err, msg) {
+            log.info(msg);
+            entities.push(msg.entity);
+            seneca.act(msg, function(err, msg) {
+                console.log(entities);
+            });
+        });
+    }
 }
 
 //@EXPORT seneca instance
