@@ -6,7 +6,7 @@ module.exports = function log_msg(options) {
     //*********************************//
 
     function init(msg, respond) {
-        log.block('in log-msg-plugin init function!', msg);
+        // // log.block('in log-msg-plugin init function!', msg);
         log.debug('in log-msg-plugin init function!');
         respond();
     }
@@ -41,7 +41,7 @@ module.exports = function log_msg(options) {
             respond(new Error('More info needed for role:log_msg,cmd:block to log data'),
                     {didLog: false});
         } else {
-            log.dataBlock((msg.title || ''), msg.data, (msg.opts || {}));
+            // log.dataBlock((msg.title || ''), msg.data, (msg.opts || {}));
             respond(null, {didLog:true});
         }
     });
@@ -61,7 +61,7 @@ module.exports = function log_msg(options) {
      */
     this.add({role:'log_msg', cmd:'error'}, function log_msg__error(msg, respond){
         if (!_.has(msg, 'data')) {
-            log.error(msg);
+            // log.error(msg);
             respond(null, {didLog: true});
         } else {
             respond(new Error('More info needed for role:log_msg,cmd:error to log data'),
@@ -80,8 +80,7 @@ module.exports = function log_msg(options) {
      * @return {[type]}            [description]
      */
     this.wrap({role:'log_msg'}, function(msg, respond){
-        log.senecaMsgOut(msg);
-        log.block('DATA SENT TO {role: \'log_msg plugin\'}', msg);
+        log.silly('in log-msg-plugin wrapper function')
         this.prior(msg, respond);
     });
 

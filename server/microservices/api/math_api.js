@@ -5,9 +5,9 @@ module.exports = function api(options) {
     this.add(
         { role: 'math', cmd: 'product'},
         function(msg, respond) {
-            log.info('~~~~~~~~~~~~ role:api,path:calculate,cmd:sum ~~~~~~~~~~~~');
-            console.dir(msg);
-            respond(null, { answer: msg.left * msg.right });
+            log.info('~~~~~~~~~~~~ role:api,path:calculate,cmd:product ~~~~~~~~~~~~');
+            // console.dir(msg);
+            respond(null, { answeer: msg.left * msg.right });
         }
     );
 
@@ -16,7 +16,6 @@ module.exports = function api(options) {
         { role: 'math', cmd: 'sum'},
         function(msg, respond) {
             log.info('~~~~~~~~~~~~ role:api,path:calculate,cmd:sum ~~~~~~~~~~~~');
-            log.info(msg);
             respond(null, { answer: msg.left + msg.right });
         }
     );
@@ -26,7 +25,9 @@ module.exports = function api(options) {
         { role: 'api', path:'calculate' },
         function(msg, respond) {
             log.info('~~~~~~~~~~~~ role:api,path:calculate ~~~~~~~~~~~~');
-            log.info(msg);
+            // log.info(msg.operation);
+            // log.info(valid_ops[msg.operation]);
+            // log.info(msg);
             this.act(
                 { role: 'math' },
                 { cmd:    valid_ops[msg.operation],
@@ -47,7 +48,7 @@ module.exports = function api(options) {
                     prefix: '/api',
                     pin: 'role:api,path:*',
                     map: {
-                        calculate: { GET: true, suffix: '/:operation' }
+                        calculate: { GET: true, suffix: '/:operation' },
                     }
                 }},
                 respond);

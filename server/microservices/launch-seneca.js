@@ -30,7 +30,9 @@ var senPluginsList = [
     'log-msg-plugin/log-msg-plugin',
     'api/api',
     'api/math_api',
-    'ultra-basic/basic-plugin-1'
+    'api/meta_api',
+    'ultra-basic/basic-plugin-1',
+    'data-entities/data-entity-test-1'
 ];
 
 async.each(senPluginsList,
@@ -42,7 +44,7 @@ async.each(senPluginsList,
     function(err) {
         if (err) {
             log.error('a plugin failed to load into Seneca: ' + err);
-            console.dir(err);
+            // console.dir(err);
             return;
         }
         log.info('all Seneca plugins successfully requested!');
@@ -53,18 +55,12 @@ async.each(senPluginsList,
 
 function setLocalSenActs() {
 
-    // seneca
-    //     .use(require('server/microservices/express/express-plugin'))
-    //     .use(require('server/microservices/log-msg-plugin/log-msg-plugin'))
-    //     .use(require('server/microservices/api/api'))
-    //     .use(require('server/microservices/api/math_api'))
-    //     .use(require('server/microservices/ultra-basic/basic-plugin-1'));
-
     seneca.act(
         {role:'test-plugins',cmd:'ret-random-num',tag:'tp-rrn'},
         function(err, msg){
             if (err) console.log(err);
-            console.log(msg);
+            // log.silly('role:test-plugins,cmd:ret-random-num,tag:tp-rrn msg:::');
+            // log.silly(msg);
             return;
         }
     );
@@ -72,8 +68,8 @@ function setLocalSenActs() {
     seneca.act(
         {role:'test-plugins',cmd:'ret-random-num',tag:'tp-rrn2'},
         function(err, msg){
-            if (err) console.log(err);
-            console.log(msg);
+            // if (err) console.log(err);
+            // log.silly(msg);
             return;
         }
     );
@@ -87,9 +83,8 @@ function setLocalSenActs() {
         .act({  role:   'test_plugin',
                 cmd:    'cmd1'          },
             function(err, result) {
-                return (err)
-                    ? log.error(err)
-                    : log.info(result);
+                if (err) return log.error(err);
+                else return result;
             }
         )
         .act({  role:   'log_msg',
@@ -97,9 +92,8 @@ function setLocalSenActs() {
                 title:  'LOG BLOCK!',
                 data:   'DATA TO LOG' },
             function(err, result) {
-                return (err)
-                    ? log.error(err)
-                    : log.info(result);
+                if (err) return log.error(err);
+                else return result;
             }
         );
 
@@ -109,20 +103,16 @@ function setLocalSenActs() {
     //END PLUGINS
     ////////////////////////////////////////////////////////////////////////
 
-    function add_roleMathCmdSum_cb(msg, respond) {
-        var sum = msg.left + msg.right
-        respond( null, { answer: sum });
-    }
-
     function act_roleMathCmdSum_cb(err, result){
         if (err) return log.error(err);
-        console.log(result);
+        log.info('act_roleMathCmdSum_cb result: ' + result);
     }
 
     function act_roleBasicNoteTrueCmdSet_cb(err, value){
         log.info('act_roleBasicNoteTrueCmdSet_cb');
         log.info(value);
     }
+
     function act_roleBasicNoteTrueCmdPop_cb(err, value){
         log.info('role:basic,note:true,cmd:list,key:list1');
         log.info(value);
@@ -131,8 +121,6 @@ function setLocalSenActs() {
         // console.log(this.bad.toString());
         console.dir(this);
     }
-
-    seneca.add({role:'math', cmd:'sum'}, add_roleMathCmdSum_cb);
 
     seneca
         .act({role:'math', cmd:'sum', left:1, right:2}, act_roleMathCmdSum_cb)
@@ -148,18 +136,21 @@ function setLocalSenActs() {
         .act({role:'basic', note:true, cmd:'pop', key:'list1'},
             function(err, value){
                 log.info('role:basic,note:true,cmd:pop,key:list1');
-                log.info(typeof value);
-                log.info(value);
+                // log.info(typeof value);
+                // log.info(value);
             }
         );
 
-    log.cli.senecaMsgOut("DATA!!!");
-    log.cli.senecaMsgOut({ arg1: 'key1' });
-    log.cli.senecaMsgOut({ 'caller$': 'caller$! so it\'s a seneca object!', role: 'someRole'});
-    log.cli.senecaMsgOut({ 'caller$': 'Action call arguments and location: Error: { init: \'log_msg\',  tag: undefined,  \'default$\': {},  \'gate$\': true,  \'fatal$\': true,  \'local$\': true }', role: 'someRole'});
+    // log.cli.senecaMsgOut("DATA!!!");
+    // log.cli.senecaMsgOut({ arg1: 'key1' });
+    // log.cli.senecaMsgOut({ 'caller$': 'caller$! so it\'s a seneca object!', role: 'someRole'});
+    // log.cli.senecaMsgOut({
+    //     'caller$': 'Action call arguments and location: Error: { init: \'log_msg\',  tag: undefined,  \'default$\': {},  \'gate$\': true,  \'fatal$\': true,  \'local$\': true }',
+    //     role: 'someRole'
+    // });
 
-    seneca.ready(function(err){
-        log.info('!!!!!!!!!!!!!!!!!!!! SENECA READY - in launch-seneca.js !!!!!!!!!!!!!!!!!!!!');
+    seneca.act('role:data_entity_test,cmd:cmd1', function(err, msg){
+        log.info(msg);
     });
 
 }
