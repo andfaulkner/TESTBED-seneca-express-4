@@ -31,6 +31,7 @@ var senPluginsList = [
     'api/api',
     'api/math_api',
     'api/meta_api',
+    'api/form-handler-api',
     'ultra-basic/basic-plugin-1',
     'data-entities/data-entity-test-1'
 ];
@@ -44,7 +45,6 @@ async.each(senPluginsList,
     function(err) {
         if (err) {
             log.error('a plugin failed to load into Seneca: ' + err);
-            // console.dir(err);
             return;
         }
         log.info('all Seneca plugins successfully requested!');
@@ -68,8 +68,6 @@ function setLocalSenActs() {
     seneca.act(
         {role:'test-plugins',cmd:'ret-random-num',tag:'tp-rrn2'},
         function(err, msg){
-            // if (err) console.log(err);
-            // log.silly(msg);
             return;
         }
     );
@@ -96,12 +94,10 @@ function setLocalSenActs() {
                 else return result;
             }
         );
-
-
-
     ////////////////////////////////////////////////////////////////////////
     //END PLUGINS
     ////////////////////////////////////////////////////////////////////////
+
 
     function act_roleMathCmdSum_cb(err, result){
         if (err) return log.error(err);
