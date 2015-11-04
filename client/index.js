@@ -8,6 +8,10 @@
   var Bootstrap = require('bootstrap/dist/js/bootstrap');
   var ie10workaround = require('bootstrap/dist/js/ie10-viewport-bug-workaround');
 
+	var URLs = {
+		indexBearDataReceiver: 'api/form_handler'
+	}
+
   //**************************************************************************//
   //** MODELS
   //*********************************//
@@ -38,13 +42,32 @@
    		this.render();
   	},
 
-  	render: function render() {
-			this.getComponent(options.route).then(function(data){
-  			this.$el.html(data);
-			}.bind(this));
-		}
   });
 
+  var IndexContentView = BackboneAppView.extend({
+  	events: {
+  		'click #forms_page--form__submitBtn': 'submitForm'
+  	},
+  	render: function render() {
+			this.getComponent('components/forms_page/forms.html').then(function(data){
+  			this.$el.html(data);
+			}.bind(this));
+		},
+		submitForm: function submitForm(event){
+			event.preventDefault();
+      $.ajax({
+      		url: URLs.indexBearDataReceiver,
+      		type: 'post',
+      		data: $("#forms_page--form-target").serialize(),
+      		success: function(data, textStatus, xhr) {
+	        	console.log(data);
+	          console.log('form submission complete!');
+	        }
+      });
+
+			console.log('SUBMITTED!');
+		}
+  });
 
 
 	//Builds content views
@@ -93,10 +116,7 @@
   		if (this.baseTopbar === false) {
     		this.baseTopbar = this._loadBaseTopbar();
   		}
-  		var indexContentView = BaseContentViewFactory({
-  			route: 'components/forms_page/forms.html',
-  			el: $('#container')
-  		});
+  		var indexContentView = new IndexContentView({ el: $('#container') });
   	},
 
   	flipToDisplay: function flipToDisplay(){
