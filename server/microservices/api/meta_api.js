@@ -1,3 +1,5 @@
+var log = require('server/debug/winston-logger')('server/microservices/api/meta_api');
+
 module.exports = function api_SenecaPlugin(options) {
 
     var plugin = 'metaapi';

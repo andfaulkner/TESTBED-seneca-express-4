@@ -1,3 +1,5 @@
+var log = require('server/debug/winston-logger')('server/microservices/api/math-api');
+
 module.exports = function api(options) {
 
     var valid_ops = { sum: 'sum', product: 'product' };
@@ -6,7 +8,6 @@ module.exports = function api(options) {
         { role: 'math', cmd: 'product'},
         function(msg, respond) {
             log.info('~~~~~~~~~~~~ role:api,path:calculate,cmd:product ~~~~~~~~~~~~');
-            // console.dir(msg);
             respond(null, { answeer: msg.left * msg.right });
         }
     );

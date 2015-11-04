@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "async": "^1.4.2",
+    "backbone": "^1.2.3",
+    "body-parser": "^1.14.1",
     "bootstrap": "^3.3.5",
     "circular-json": "^0.2.0",
     "clarify": "^1.0.5",
@@ -26,6 +28,7 @@
     "pg": "^4.4.3",
     "redis": "^2.1.0",
     "rootpath": "^0.1.2",
+    "seneca-postgresql-store": "^0.7.0",
     "seneca-redis-store": "0.0.8",
     "string": "^3.3.1",
     "style-loader": "^0.12.4",

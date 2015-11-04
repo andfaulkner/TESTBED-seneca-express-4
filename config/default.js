@@ -28,6 +28,15 @@ module.exports = {
             return_buffer : false
         },
     },
+
+    postgres: {
+		  name:'postgres',
+		  host:'127.0.0.1',
+		  port:5432,
+		  username: 'postgres',
+		  password:'123456'
+		},
+
     'seneca': {
         define_plugins: {
             basic: true

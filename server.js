@@ -36,7 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
     require('clarify'); // Exclude node internal calls from the stack
 }
 
-GLOBAL.log = require('server/debug/winston-logger');
+var log = require('server/debug/winston-logger')('server.js');
 require('server/debug/uncaught-error-handler');
 //********************************************************************//
 
@@ -46,7 +46,7 @@ log.info(path.join(__dirname, '.build'));
 //******************************* SENECA *******************************//
 var seneca = require('server/microservices/launch-seneca.js')
     .ready(function(err){
-        console.dir(seneca);
+        log.dir(seneca);
         console.log(seneca.start_time);
     });
 //**********************************************************************//
@@ -55,8 +55,13 @@ var seneca = require('server/microservices/launch-seneca.js')
 //******************************* SERVER *******************************//
 var express = require('express');
 
+//plugins
+var bodyParser = require('body-parser');
+
 var app = express()
     /* MIDDLEWARES GO HERE - EXAMPLES DIRECTLY BELOW */
+		.use(bodyParser.urlencoded({ extended: true }))
+		.use(bodyParser.json())
     .use('/', express.static(path.join(__dirname, '.build')))
     .use(seneca.export('web'))
     // .use('/api', restAPIRouter)

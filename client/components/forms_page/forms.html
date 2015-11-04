@@ -1,25 +1,26 @@
 <form class="forms_page--form" id="forms_page--form-target">
     <div class="form-group forms_page-form-box">
         <span><label for="firstName">First name</label></span>
-        <input type="text" class="form-control" placeholder="First name" id="firstName" name="firstName">
+        <input type="text" class="form-control" placeholder="First name" id="firstName" name="name[first]">
     </div>
 
     <div class="form-group forms_page-form-box">
         <label for="lastName">Last name</label>
-        <input type="text" class="form-control" placeholder="Last name" id="lastName" name="lastName">
+        <input type="text" class="form-control" placeholder="Last name" id="lastName" name="name[last]">
     </div>
 
 
     <div class="form-group">
         <label for="inputFavouriteColor">Favourite Colour</label>
-        <input type="text" class="form-control" id="inputFavouriteColor" placeholder="Favourite Colour">
+        <input type="text" class="form-control" id="inputFavouriteColor" placeholder="Favourite Colour" name="colour">
     </div>
     <div class="form-group">
         <label for="inputFavouriteBear">Favourite Bear</label>
-        <input type="text" class="form-control" id="inputFavouriteBear" placeholder="Favourite Bear">
+        <input type="text" class="form-control" id="inputFavouriteBear" placeholder="Favourite Bear" name="favorite_bear">
     </div>
     <div class="checkbox">
-        <label><input type="checkbox">Rar?</label>
+        <label><input type="checkbox" name="rar">Rar?</label>
     </div>
     <input type="submit" class="btn btn-primary" id="forms_page--form__submitBtn">Submit</input>
 </form>
+<div id="forms_page--sample-model-display">Default</div>

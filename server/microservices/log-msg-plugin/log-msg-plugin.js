@@ -1,3 +1,5 @@
+var log = require('server/debug/winston-logger')('server/microservices/log-msg-plugin/log-msg-plugin');
+
 module.exports = function log_msg(options) {
 
     //--------------------------------------------------------------------//
@@ -76,11 +78,10 @@ module.exports = function log_msg(options) {
      * this.prior below. E.g. for a call to {role:'log_msg', cmd:'block'}, the run order would be:
      *     [this.wrap -> this.prior ==]==> this.add({role:'log_msg', cmd:'block'}) callback
      * @param  {[type]} msg        [description]
-     * @param  {[type]} respond){                     log.block('DATA SENT TO {role: 'log_msg plugin'}', msg);        this.prior(msg, respond);    } [description]
-     * @return {[type]}            [description]
+     * @param  {[type]} respond)
      */
     this.wrap({role:'log_msg'}, function(msg, respond){
-        log.silly('in log-msg-plugin wrapper function')
+        log.silly('in log-msg-plugin wrapper function');
         this.prior(msg, respond);
     });
 

@@ -80,7 +80,8 @@ module.exports = {
             jQuery: 'jquery',
             jquery: 'jquery',
             'window.jquery': 'jquery',
-            bootstrap: 'bootstrap'
+            bootstrap: 'bootstrap',
+            Backbone: 'backbone'
         })
     ],
 
