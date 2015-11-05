@@ -18,7 +18,7 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
                 'return_bear_data': { GET: true, POST: true },
                 'return_bear': {
                 		GET: true, POST: true, 
-                		alias:'/returnbear/:dataitem' 
+                		alias:'/returnbear/:firstNamePath' 
                 },
                 'form_handler_2': { GET: true, POST: true },
                 'form_handler_3': true //GET by default
@@ -61,10 +61,8 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
 				starter_data.rar = msg.req$.body.rar;
 
         starter_data.save$(function(err, starter_data_ret) {
-	    		log.heading('starter_data_ret var after data save:::');
+	    		log.heading('starter_data_ret object returned after data save:::');
         	console.log(starter_data_ret);
-        	console.log('\n\nType:');
-        	console.log(typeof starter_data_ret);
         	console.log('\n\nstarter_data_ret object output: ');
         	console.dir(starter_data_ret);
         	console.log('\n\nlog$ function source: ');
@@ -76,60 +74,16 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
         	console.log('\n\nprivate$.seneca.delegate function source: ');
         	console.log(starter_data_ret.private$.seneca.delegate.toString());
         	console.log('####################### END starter_data #######################\n\n');
-        	console.log('success!');
-
-        	console.log('\n\nCalling this: ');
-        	console.dir(this);
-
-        	// var senecaFixedArgs = this.delegate({foo: 'original'});
-        	// console.log('\n\nsenecaFixedArgs object returned by running delegate::');
-        	// console.log(senecaFixedArgs);
-        	// console.log('\n\nnewly assigned fixed arg in senecaFixedArgs object ret by delegate::');
-        	// console.log(senecaFixedArgs.fixedargs.foo);
-
-        	// console.log('\n\nsenecaFixedArgs object root - senecaFixedArgs.root.delegate({}) ::');
-        	// console.log(senecaFixedArgs.root.delegate({}));
-
-//        	console.log('\n\nthis.prior call in senecaFixedArgs::');
-//        	console.log(senecaFixedArgs.prior());
-
-        	// console.log('\n\nSeneca object - after delegate used to assign "fixed args" ::');
-        	// console.dir(this);
-        	// console.log('\n\nsrc of "parent" fn of seneca obj, after delegate assigned fixed args :');
-        	// console.log(this.parent.toString());
-
-        	// console.log('\n\nthis.root::');
-        	// console.log(this.root);
-
-        	// console.log('\n\nthis.version::');
-        	// console.log(this.fixedargs);
 
         	console.log('###################################################################');
-        	console.log('this.res?');
-        	console.log(this.res);
-        	console.log('this.res$?');
-        	console.log(this.res$);
-        	console.log('Object.keys(this)');
+        	console.log('this.res and this.res$ are not defined');
+        	console.log('this.load$; and Object.keys(this.context) are undefined');
         	console.log(Object.keys(this));
-        	console.log('Object.keys(this.context)');
-        	console.log(Object.keys(this.context));
         	console.log('Object.keys(this.fixedargs)');
         	console.log(Object.keys(this.fixedargs));
         	console.log('Object.keys(this.fixedargs.res$)');
         	console.log(Object.keys(this.fixedargs.res$));
 
-        	console.log(this.load$);
-//        	var senecaFixedArgsOverridden = this.delegate({foo: 'overriddenValue'});
-//        	console.log('\n\nSeneca fixed args - after delegate run::');
-//        	console.log(senecaFixedArgsOverridden);
-
-            // log.info(starter_data_ret);
-            // callback(null, {
-            //     role: 'data_entity_test',
-            //     cmd: 'loadentity',
-            //     id: starter_data.id,
-            //     entity: starter_data
-            // });
 	        callback(null, { some_key: 'some_result'});
 
         });
@@ -140,42 +94,26 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
     	var toLoadStarterData = this.make('starter_data');
 
     	//Rules of loading: exact matches on datatype & data value work
-    	toLoadStarterData.load$({first_name:'meeka'}, function(err, list){
-    		console.log(list);
-    	});
+    	toLoadStarterData.load$({first_name:'meeka'}, _.partial(console.log, null));
 
     	//Blank queries work...if there's blank data in that spot
-    	toLoadStarterData.load$({first_name:''}, function(err, list){
-    		console.log(list);
-    	});
+    	toLoadStarterData.load$({first_name:''}, _.partial(console.log, null));
 
     	//No partial matches
-    	toLoadStarterData.load$({first_name:'Mee'}, function(err, list){
-    		console.log(list);
-    	});
+    	toLoadStarterData.load$({first_name:'Mee'}, _.partial(console.log, null));
 
     	//No directly querying the name of the entity
-    	toLoadStarterData.load$('starter_data', function(err, list){
-    		console.log(list);
-    	});
+    	toLoadStarterData.load$('starter_data', _.partial(console.log, null));
 
     	console.log('Querying on non-existent columns in the db will return errors');
     	//Querying on non-existent columns in the db will return errors
-    	// toLoadStarterData.load$({'gingaewgf': 'vregknerg'}, function(err, list){
-    	// 	console.log(list);
-    	// });
+    	// toLoadStarterData.load$({'gingaewgf': 'vregknerg'}, _.partial(console.log, null));
 
     	console.log('You cannot query the entity using zone, base, or name');
     	//You cannot query the entity using zone, base, or name
-    	// toLoadStarterData.load$({'zone': 'starter_data'}, function(err, list){
-    	// 	console.log(list);
-    	// });
-    	// toLoadStarterData.load$({'base': 'starter_data'}, function(err, list){
-    	// 	console.log(list);
-    	// });
-    	// toLoadStarterData.load$({'name': 'starter_data'}, function(err, list){
-    	// 	console.log(list);
-    	// });
+    	// toLoadStarterData.load$({'zone': 'starter_data'}, _.partial(console.log, null));
+    	// toLoadStarterData.load$({'base': 'starter_data'}, _.partial(console.log, null));
+    	// toLoadStarterData.load$({'name': 'starter_data'}, _.partial(console.log, null));
 
     	//Rules of loading: cannot use wildcards
     	toLoadStarterData.load$({first_name:'*'}, function(err, list){
@@ -192,9 +130,6 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
     	// 	console.log(list);
     	// });
 
-			log.block('Object.keys(toLoadStarterData)', Object.keys(toLoadStarterData));
-			log.block('Object.keys(toLoadStarterData.entity$)', Object.keys(toLoadStarterData.entity$));
-
 			//Identifies the zone/base/name properties, w/ - as placeholders.
 			//e.g. -/-/starter_data is provided by this specific entity object
 			console.log(toLoadStarterData.entity$);
@@ -205,39 +140,24 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
 
 			// //empty queries, however, act as wildcards
 			toLoadStarterData.list$({}, function(err, list){
-				list.length
    			console.log(list);
-				callback(null, list);
    		});
 
-    	toLoadStarterData.load$({rar:'t'}, function(err, list){
+			console.log('right before rar colon t section');
+
+    	toLoadStarterData.load$({rar:true}, function(err, list){
     		console.log(list);
-    		callback(null, list);
+				callback(null, list);
     	});
-    	// toLoadStarterData.load$({rar:'t'}, function(err, list){
-    	// 	console.log(list);
-    	// });
-    	// toLoadStarterData.load$({rar:true}, function(err, list){
-    	// 	console.log(list);
-    	// });
-    	// toLoadStarterData.load$({rar:1}, function(err, list){
-    	// 	console.log(list);
-    	// });
-    	// toLoadStarterData.load$({rar:'true'}, function(err, list){
-    	// 	console.log(list);
-    	// });
-
-// {cmd:'load',role:'entity',ent:$-/level/bar
-			// -/pg/-
-
-        	// var foo_entity = seneca.make('foo');
-        	// this.act({role:'entity', cmd:'load', });
-       // callback(null, {data: 'data'})
     }
 
 
     function return_bear_cb(msg, callback){
-			callback(null, { some_key: 'some_result'});
+    	var toLoadStarterData = this.make('starter_data');
+    	console.log(msg.firstNamePath);
+			toLoadStarterData.load$({ first_name: msg.firstNamePath }, function(err, data){
+				callback(null, _.omit(data, 'entity$'));
+			});
     }
 
 
