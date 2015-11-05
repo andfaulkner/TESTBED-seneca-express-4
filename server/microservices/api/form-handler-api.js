@@ -4,6 +4,7 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
 
     this.add('role:api,cmd:form_handler', form_handler_cb);
     this.add('role:api,cmd:return_bear_data', return_bear_data_cb);
+    this.add('role:api,cmd:return_bear', return_bear_cb);
     this.add('role:api,cmd:form_handler_2', form_handler_2_cb);
     this.add('role:api,cmd:form_handler_3', form_handler_3_cb);
 
@@ -15,6 +16,10 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
             map: {
                 'form_handler': { GET: true, POST: true },
                 'return_bear_data': { GET: true, POST: true },
+                'return_bear': {
+                		GET: true, POST: true, 
+                		alias:'/returnbear/:dataitem' 
+                },
                 'form_handler_2': { GET: true, POST: true },
                 'form_handler_3': true //GET by default
             }
@@ -128,8 +133,8 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
 	        callback(null, { some_key: 'some_result'});
 
         });
-
     }
+
 
     function return_bear_data_cb(msg, callback){
     	var toLoadStarterData = this.make('starter_data');
@@ -180,6 +185,9 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
     		console.log(list);
     	});
     	console.log('querying { *: * } doesn\'t work. It\'s not SQL');
+    	//
+    	//Rules of loading: no wildcards. This counts too:
+    	//
     	// toLoadStarterData.load$({'*': '*'}, function(err, list){
     	// 	console.log(list);
     	// });
@@ -196,11 +204,11 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
 			log.block('toLoadStarterData.data$', toLoadStarterData.data$());
 
 			// //empty queries, however, act as wildcards
-			// toLoadStarterData.list$({}, function(err, list){
-			// 	list.length
-   //  		console.log(list);
-			// 	callback(null, list);
-   //  	});
+			toLoadStarterData.list$({}, function(err, list){
+				list.length
+   			console.log(list);
+				callback(null, list);
+   		});
 
     	toLoadStarterData.load$({rar:'t'}, function(err, list){
     		console.log(list);
@@ -226,6 +234,12 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
         	// this.act({role:'entity', cmd:'load', });
        // callback(null, {data: 'data'})
     }
+
+
+    function return_bear_cb(msg, callback){
+			callback(null, { some_key: 'some_result'});
+    }
+
 
     function form_handler_2_cb(msg, callback){
         //operations here

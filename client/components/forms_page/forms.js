@@ -1,7 +1,7 @@
 // FRONTEND
 
 (function components_forms_MODULE (){
-
+/*
 	var URLs = {
 		indexBearDataReceiver: 'api/form_handler'
 	}
@@ -39,6 +39,6 @@
 		        }
         });
     });
-
+*/
     module.exports = { };
 }());

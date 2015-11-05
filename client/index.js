@@ -19,10 +19,48 @@
   var BackboneModel = Backbone.Model.extend({
 
   	//Optional constructor
-  	initialize: function initialize(){
-  	}
+  	initialize: function initialize(){ }
 
   });
+
+  var BearData = Backbone.Model.extend({
+
+  	defaults: {
+  		firstName: '',
+  		lastName: '',
+  		colour: 'brown',
+  		favoriteBear: 'Grizzly',
+  		rar: false
+  	},
+
+  	//triggered whenever you create a new instance of a model
+  	initialize: function initialize(){
+  		console.log('\'dummy\' BearData initialized!');
+  		this.on('change:favoriteBear', function(model){
+  			console.log('favoriteBear has been changed to: ' + model.get('favoriteBear'));
+  		});
+  	}
+  });
+
+  var meekaBearData = new BearData({ 
+  	firstName: 'Meeka',
+  	lastName: 'PeekaFaulkner'
+  }); 
+  meekaBearData.set({ 
+  	'favoriteBear': 'Sun Bear',
+  	'colour': 'black',
+  	'rar': true
+  });
+  console.log(meekaBearData.get('favoriteBear'));
+
+  var meekamooBearData = new BearData({ firstName: 'Meekamoo' });
+  console.log(meekamooBearData.get('firstName'));
+  console.log(meekamooBearData.get('favoriteBear'));
+
+  var meekaPeekaBearData = new BearData({ firstName: 'Meeka', lastName: 'Peeka' });
+  console.log(meekaPeekaBearData.get('firstName'));
+  meekaPeekaBearData.set({ favoriteBear: 'Sun Bear' });
+
 
   //-- END MODELS --
   //**************************************************************************//
@@ -43,6 +81,7 @@
   	},
 
   });
+
 
   var IndexContentView = BackboneAppView.extend({
   	events: {
