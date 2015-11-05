@@ -34,7 +34,6 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
      * @return {[type]}            [description]
      */
     function form_handler_cb(msg, callback){
-    		log.info('form handler cb ran!');
 
     		log.heading('request messages - with log');
     		log.dir('info', msg);
