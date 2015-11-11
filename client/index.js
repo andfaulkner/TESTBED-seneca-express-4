@@ -7,125 +7,77 @@
   var _ = require('lodash');
   var Bootstrap = require('bootstrap/dist/js/bootstrap');
   var ie10workaround = require('bootstrap/dist/js/ie10-viewport-bug-workaround');
-
-	var URLs = {
-		indexBearDataReceiver: 'api/form_handler'
-	}
+  var URLs = require('./urls.js');
 
   //**************************************************************************//
   //** MODELS
   //*********************************//
-  //code starts here
+  //Example model - does nothing.
   var BackboneModel = Backbone.Model.extend({
-
   	//Optional constructor
   	initialize: function initialize(){ }
-
   });
 
-  var BearData = Backbone.Model.extend({
+  /**
+   * Dummy model data
+   */
+  var BearDummyData = require('./models/bear-dummy-data.js');
 
-  	defaults: {
-  		firstName: '',
-  		lastName: '',
-  		colour: 'brown',
-  		favoriteBear: 'Grizzly',
-  		rar: false
-  	},
+  //Testing crap
+  //-------------------- Instantiating dummy data --------------------//
+  (function testingCrapModels(){
+	  /**
+	   * More dummy model data
+	   */
+	  var meekaBearDummyData = new BearDummyData({
+	  	firstName: 'Meeka',
+	  	lastName: 'PeekaFaulkner'
+	  });
+	  meekaBearDummyData.set({
+	  	'favoriteBear': 'Sun Bear',
+	  	'colour': 'black',
+	  	'rar': true
+	  });
+	  console.log(meekaBearDummyData.get('favoriteBear'));
+	  var meekamooBearDummyData = new BearDummyData({ firstName: 'Meekamoo' });
+	  console.log(meekamooBearDummyData.get('firstName'));
+	  console.log(meekamooBearDummyData.get('favoriteBear'));
 
-  	//triggered whenever you create a new instance of a model
-  	initialize: function initialize(){
-  		console.log('\'dummy\' BearData initialized!');
-  		this.on('change:favoriteBear', function(model){
-  			console.log('favoriteBear has been changed to: ' + model.get('favoriteBear'));
-  		});
-  	}
-  });
+	  var meekaPeekaBearDummyData = new BearDummyData({ firstName: 'Meeka', lastName: 'Peeka' });
+	  console.log(meekaPeekaBearDummyData.get('firstName'));
+	  meekaPeekaBearDummyData.set({ favoriteBear: 'Sun Bear' });
+  }());
+  //------------------------------------------------------------------//
 
-  var meekaBearData = new BearData({ 
-  	firstName: 'Meeka',
-  	lastName: 'PeekaFaulkner'
-  }); 
-  meekaBearData.set({ 
-  	'favoriteBear': 'Sun Bear',
-  	'colour': 'black',
-  	'rar': true
-  });
-  console.log(meekaBearData.get('favoriteBear'));
-
-  var meekamooBearData = new BearData({ firstName: 'Meekamoo' });
-  console.log(meekamooBearData.get('firstName'));
-  console.log(meekamooBearData.get('favoriteBear'));
-
-  var meekaPeekaBearData = new BearData({ firstName: 'Meeka', lastName: 'Peeka' });
-  console.log(meekaPeekaBearData.get('firstName'));
-  meekaPeekaBearData.set({ favoriteBear: 'Sun Bear' });
-
-
+  // One request to server, no clue where to get the URLs.
+  var BearDisplayData = require('./models/bear-display-data.js');
   //-- END MODELS --
   //**************************************************************************//
-
+  //**************************************************************************//
+  //** COLLECTIONS
+  //*********************************//
+  var BearDisplayDataCollection = require('./collections/bear-display-data-collection.js');
+  //**************************************************************************//
   //**************************************************************************//
   //** VIEWS
   //*********************************//
-  //Top level view
-  var BackboneAppView = Backbone.View.extend({
-  	getComponent: function getComponent(route){
-    	return $.get(route, function(data) {
-      	return data;
-      }.bind(this));
-  	},
+  //Top level view - all others inherit from it
+  var BackboneAppView = require('./core_views/backbone-view.js');
 
-   	initialize:  function initialize() {
-   		this.render();
-  	},
-
-  });
+  /**
+   * Handles View containing Home / index content
+   */
+  var HomeContentView = require('./core_views/home-content-view.js');
 
 
-  var IndexContentView = BackboneAppView.extend({
-  	events: {
-  		'click #forms_page--form__submitBtn': 'submitForm'
-  	},
-  	render: function render() {
-			this.getComponent('components/forms_page/forms.html').then(function(data){
-  			this.$el.html(data);
-			}.bind(this));
-		},
-		submitForm: function submitForm(event){
-			event.preventDefault();
-      $.ajax({
-      		url: URLs.indexBearDataReceiver,
-      		type: 'post',
-      		data: $("#forms_page--form-target").serialize(),
-      		success: function(data, textStatus, xhr) {
-	        	console.log(data);
-	          console.log('form submission complete!');
-	        }
-      });
+	/**
+	 * Builds basic content views by running this - an instantiator
+	 * @type {Object}
+	 */
+  var BaseContentViewFactory = require('./core_views/base-content-view-factory.js');
 
-			console.log('SUBMITTED!');
-		}
-  });
-
-
-	//Builds content views
-  var BaseContentViewFactory = function ContentViewFactory(options) {
-
-  	return new (BackboneAppView.extend({
-    	initialize:  function initialize() {
-    		this.render();
-    	},
-
-    	render: function render() {
-				this.getComponent(options.route).then(function(data) {
-    			this.$el.html(data);
-				}.bind(this));
-			}
-  	}))({ el: options.el });
-  };
-
-  // var baseContentViewFactory = function ContentViewFactory(options){
+  //Top level view - all others inherit from it
+  var BearDisplayView = require('./core_views/bear-display-view.js');
 
   //-- END VIEWS --
   //**************************************************************************//
@@ -133,50 +85,14 @@
 	//**************************************************************************//
 	//** ROUTING
 	//*********************************//
-  var AppRouter = Backbone.Router.extend({
+  var AppRouter = require('./routing/router_main.js');
 
-  	routes: {
-  		'': 'flipToIndex',
-  		'index': 'flipToIndex',
-  		'display': 'flipToDisplay',
-  		':otherdata': 'other'
-  	},
-
-  	baseTopbar: false,
-
-  	_loadBaseTopbar: function _loadBaseTopbar(){
-  		var topBarView = BaseContentViewFactory({
-  			route: 'components/topbar/topbar.html',
-  			el: $('#topbar')
-  		});
-  	},
-
-  	flipToIndex: function flipToIndex(){
-  		if (this.baseTopbar === false) {
-    		this.baseTopbar = this._loadBaseTopbar();
-  		}
-  		var indexContentView = new IndexContentView({ el: $('#container') });
-  	},
-
-  	flipToDisplay: function flipToDisplay(){
-  		if (this.baseTopbar === false) {
-    		this.baseTopbar = this._loadBaseTopbar();
-  		}
-			var aboutView = BaseContentViewFactory({
-				route: 'components/index_page/index_content.html',
-				el: $('#container')
-			});
-  	},
-
-  	other: function other(otherdata){
-  		console.log(otherdata);
-  	}
-  });
 //-- END ROUTING --
 //**************************************************************************//
 
   //Launch the app when the DOM is ready
   $(function(){
+  	console.log('\n\nINDEX.JS::: DOM READY CALLBACK!\n\n');
     new AppRouter();
 		Backbone.history.start()
   });

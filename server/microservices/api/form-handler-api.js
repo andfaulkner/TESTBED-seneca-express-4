@@ -2,9 +2,10 @@ var log = require('server/debug/winston-logger')('server/microservices/api/form-
 
 module.exports = function formHandlerAPI_SenecaPlugin(options) {
 
-    this.add('role:api,cmd:form_handler', form_handler_cb);
+    this.add('role:api,cmd:form_handler', save_form_data_cb);
     this.add('role:api,cmd:return_bear_data', return_bear_data_cb);
     this.add('role:api,cmd:return_bear', return_bear_cb);
+    this.add('role:api,cmd:return_bear_display_collection', return_bear_display_collection_cb);
     this.add('role:api,cmd:form_handler_2', form_handler_2_cb);
     this.add('role:api,cmd:form_handler_3', form_handler_3_cb);
 
@@ -17,9 +18,10 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
                 'form_handler': { GET: true, POST: true },
                 'return_bear_data': { GET: true, POST: true },
                 'return_bear': {
-                		GET: true, POST: true, 
-                		alias:'/returnbear/:firstNamePath' 
+                		GET: true, POST: true,
+                		alias:'/returnbear/:firstNamePath'
                 },
+                'return_bear_display_collection': { GET: true, POST: true },
                 'form_handler_2': { GET: true, POST: true },
                 'form_handler_3': true //GET by default
             }
@@ -33,7 +35,7 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
      * @param  {Function} callback Send successful result to callback
      * @return {[type]}            [description]
      */
-    function form_handler_cb(msg, callback){
+    function save_form_data_cb(msg, callback){
     		log.info('form handler cb ran!');
 
     		log.heading('request messages - with log');
@@ -85,11 +87,14 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
         	console.log(Object.keys(this.fixedargs.res$));
 
 	        callback(null, { some_key: 'some_result'});
-
         });
     }
 
-
+    /**
+     * Returns bear data from the server to the client
+     * @param  {String}   msg      Seneca msg
+     * @param  {Function} callback Returns data to client.
+     */
     function return_bear_data_cb(msg, callback){
     	var toLoadStarterData = this.make('starter_data');
 
@@ -116,19 +121,14 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
     	// toLoadStarterData.load$({'name': 'starter_data'}, _.partial(console.log, null));
 
     	//Rules of loading: cannot use wildcards
-    	toLoadStarterData.load$({first_name:'*'}, function(err, list){
-    		console.log(list);
-    	});
-    	toLoadStarterData.load$('*', function(err, list){
-    		console.log(list);
-    	});
+    	console.log('No wildcards allowed');
+    	toLoadStarterData.load$({first_name:'*'}, _.partial(console.log, null));
+    	toLoadStarterData.load$('*', _.partial(console.log, null));
+
     	console.log('querying { *: * } doesn\'t work. It\'s not SQL');
-    	//
-    	//Rules of loading: no wildcards. This counts too:
-    	//
-    	// toLoadStarterData.load$({'*': '*'}, function(err, list){
-    	// 	console.log(list);
-    	// });
+
+    	//Rules of loading: no wildcards. This counts too, and will not work:
+    	// toLoadStarterData.load$({'*': '*'}_.partial(console.log, null));
 
 			//Identifies the zone/base/name properties, w/ - as placeholders.
 			//e.g. -/-/starter_data is provided by this specific entity object
@@ -139,12 +139,9 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
 			log.block('toLoadStarterData.data$', toLoadStarterData.data$());
 
 			// //empty queries, however, act as wildcards
-			toLoadStarterData.list$({}, function(err, list){
-   			console.log(list);
-   		});
+			toLoadStarterData.list$({}, _.partial(console.log, null));
 
 			console.log('right before rar colon t section');
-
     	toLoadStarterData.load$({rar:true}, function(err, list){
     		console.log(list);
 				callback(null, list);
@@ -152,12 +149,28 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
     }
 
 
+    /**
+     * Returns bear data from client to server, for display
+     * @param  {Object}   msg      Seneca args
+     * @param  {Function} callback Sends data to server
+     */
     function return_bear_cb(msg, callback){
     	var toLoadStarterData = this.make('starter_data');
     	console.log(msg.firstNamePath);
 			toLoadStarterData.load$({ first_name: msg.firstNamePath }, function(err, data){
 				callback(null, _.omit(data, 'entity$'));
 			});
+    }
+
+    //Send back ALL the data.
+    function return_bear_display_collection_cb(msg, callback){
+    	console.log('return_bear_display_collection_cb called!');
+    	var toLoadStarterData = this.make('starter_data');
+    	console.log('return_bear_display_collection_cb called!');
+    	toLoadStarterData.list$({ }, function(err, data) {
+    		console.log(data);
+    		callback(null, _.omit(data, 'entity$'));
+    	});
     }
 
 
