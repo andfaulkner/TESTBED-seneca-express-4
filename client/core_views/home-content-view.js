@@ -8,10 +8,6 @@ module.exports = BackboneAppView.extend({
 			console.log('%c\n\nHOME-CONTENT-VIEW::: ENTERED RENDER\n\n', "color:blue");
   		var that = this;
   		this.loadHTMLSnippetFileIntoEl('components/forms_page/forms.html');
-			// this.getComponent('components/forms_page/forms.html').then(function(data){
-			// 	console.log('%c\n\nHOME-CONTENT-VIEW::: ENTERED RENDER getComponent CB\n\n', "color:blue");
-  	// 		that.$el.html(data);
-			// });
 		},
 		//Submit button
 		//TODO also send this to the model?

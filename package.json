@@ -17,6 +17,7 @@
     "clarify": "^1.0.5",
     "colors": "^1.1.2",
     "css-loader": "^0.19.0",
+    "dustjs-linkedin": "^2.7.2",
     "express": "^4.13.3",
     "harmonize": "^1.4.4",
     "jquery": "^2.1.4",

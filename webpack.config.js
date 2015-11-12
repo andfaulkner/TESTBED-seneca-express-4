@@ -81,7 +81,8 @@ module.exports = {
             jquery: 'jquery',
             'window.jquery': 'jquery',
             bootstrap: 'bootstrap',
-            Backbone: 'backbone'
+            Backbone: 'backbone',
+            dust: 'dustjs-linkedin'
         })
     ],
 

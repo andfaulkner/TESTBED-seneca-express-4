@@ -1,20 +1,21 @@
 var BearDisplayData = require('../models/bear-display-data.js');
 
 var styleSync = 'color:white; background:green; font-size: large'
+var modName = '%c\n\nBEAR-DISPLAY-DATA-COLLECTION::: '
 
-Backbone.sync = function(method, modelOrColl, options){
-	console.log('%c\n\nBEAR-DISPLAY-DATA-COLLECTION::: ENTERED SYNC\n\n', styleSync);
+
+Backbone.sync = function backboneSync(method, modelOrColl, options) {
+	console.log(modName + 'ENTERED SYNC\n\n', styleSync);
+
 	if (method === 'read') {
 		$.ajax({
     	url: modelOrColl.url,
       type: 'get',
       success: function(collData, textStatus, xhr) {
-				console.log('%c\n\nBEAR-DISPLAY-DATA-COLLECTION::: ' +
-					'ENTERED SYNC SUCCESS CB FOR READ METHOD\n\n', styleSync);
-		    console.log(collData);
-				console.log('%c\n\nBEAR-DISPLAY-DATA-COLLECTION::: SYNC::: SUCCESS CB::: modelOrColl:::\n\n',
-					styleSync);
-				modelOrColl.reset(_.reduce(collData, function(modelDataObj, val, key) {
+				console.log(modName + 'ENTERED SYNC SUCCESS CB FOR READ METHOD\n\n', styleSync);
+		    console.dir(collData);
+
+				modelOrColl.reset(_.reduce(collData, function resetCollReducer(modelDataObj, val, key) {
 					modelDataObj = modelDataObj || [];
 					modelDataObj.push({
 						firstName: val.firstName,
@@ -24,22 +25,12 @@ Backbone.sync = function(method, modelOrColl, options){
 					return modelDataObj;
 				}, []));
 
-				// _.forEach(collData, function(val, key){
-				// 	modelOrColl.add({
-				// 		firstName: val.firstName,
-				// 		lastName: val.lastName,
-				// 		favoriteBear: val.favoriteBear
-				// 	});
-				// 	console.log(val);
-				// 	console.log(key);
-				// });
+				console.log(modName + 'SYNC::: SUCCESS CB END::: modelOrColl:::\n\n', styleSync);
 		    console.dir(modelOrColl);
-
-	      // Backbone.trigger('bearDisplayDataCollection:dataArrived', collData);
 			}
 		});
 	}
-}
+};
 
 //CLASS//
 var BearDisplayDataCollection = Backbone.Collection.extend({
@@ -51,8 +42,11 @@ var BearDisplayDataCollection = Backbone.Collection.extend({
 	handleNewData: function handleNewData(){
 		console.log('handleNewData');
 	},
-	initialize: function initialize(){
+	grabData: function grabData(){
 		this.fetch();
+	},
+	initialize: function initialize(){
+		console.log('initializing BearDisplayDataCollection!')
 	}
 });
 

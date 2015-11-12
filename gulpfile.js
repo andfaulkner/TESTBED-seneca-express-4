@@ -33,6 +33,7 @@ require('shelljs/global');
 var p = require('gulp-packages')(gulp, [
     'autoprefixer',             // prefix css for multiple browsers
     'babel',                    // compile ECMA6 --> ECMA5
+    'concat',
     'debug',                    // lists all files run thru it
     'dev',                      // Toggle html comments on & off
     'display-help',             // Display help file
@@ -83,15 +84,28 @@ var SRC = {
     'client': 'client/**',
     'clientJS': 'client/**/*.js',
     'clientStatic': [
-        'client/**',
-        '!client/**/*.js',
-        '!client/js/**'
-    ]
+    	'client/**/*.html',
+    	'client/**/*.png',
+    	'client/**/*.gif',
+    	'client/**/*.ico',
+    	//HACK - not actually static - but here for now since no rendering being done yet
+    	'client/**/*.css',
+    	'client/**/*.less',
+    	'client/**/*.sass',
+    	'client/**/*.scss'
+    	//////////////////////////////////////////////////////////////
+//    'clientStatic': [
+//       'client/**',
+//        '!client/**/*.js',
+//        '!client/js/**'
+    ],
+    'clientTemplates': 'client/**/*.dust'
 };
 
 var DEST = {
     'root': '.build',
     'clientStatic': '.build',
+    'clientroot': 'client',
 };
 
 var liveReloadPort = 35729;
@@ -147,7 +161,8 @@ var fileExists = function fileExists(filePath, callback){
  */
 var launchLivereloadWatch = function launchLivereloadWatch() {
     livereload.listen(liveReloadPort);
-    gulp.watch(SRC.client, ['build']);
+    gulp.watch(SRC.clientJS, ['webpack', 'reload']);
+    gulp.watch(SRC.clientTemplates, ['dust2', 'reload']);
 };
 
 
@@ -316,21 +331,26 @@ gulp.task('dust', function dustTask(){
             }
         }))
         .pipe(gulp.dest(DEST.root))
-        //.pipe(notify({
-        //    onLast: true,
-        //    message: 'DUST Compiled'
-        //}));
 });
 
+gulp.task('dust2', function dustTask2(){
+  return gulp.src(SRC.clientTemplates)
+		.pipe(p.dust({
+			// Customize template name
+			name: function (file) {
+				var basename = path.basename(file.relative);
+				return basename.substring(0, basename.lastIndexOf('.'));
+			}
+		}))
+		.pipe(p.concat('dustTemplates.js'))
+    .pipe(gulp.dest(DEST.root))
+    .pipe(gulp.dest(DEST.clientroot))
+});
 
 gulp.task('copy-static', function copyStaticTask(){
     return gulp.src(SRC.clientStatic)
         .pipe(newerThanRootIfNotProduction())
         .pipe(gulp.dest(DEST.clientStatic))
-        //.pipe(notify({
-        //    onLast: true,
-        //    message: 'STATIC ASSETS COPIED'
-        //}));
 });
 
 gulp.task('reload', function reloadTask() {
@@ -347,9 +367,12 @@ gulp.task('reload', function reloadTask() {
 //gulp.task('build', ['copy-static', 'dust', 'webpack']);
 gulp.task('build', function(){ return runSequence(['copy-static', 'webpack'], 'reload'); });
 
+//gulp.task('build', ['copy-static', 'dust', 'webpack']);
+gulp.task('full-build', function(){ return runSequence(['dust2', 'copy-static', 'webpack'], 'reload'); });
+
 /**
  * Checks if the livereload port is in use. Finds the process tying it up if so, & kills it.
  * Relaunches livereload server if true
  * @return {[type]}       [description]
  */
-gulp.task('default', ['build'], function(){ return initLivereloadWatchSetup(); });
+gulp.task('default', ['full-build'], function(){ return initLivereloadWatchSetup(); });

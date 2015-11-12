@@ -29,7 +29,7 @@ module.exports = Backbone.Router.extend({
 		});
 	},
 
-	_grabView: function _grabView(viewName, ViewClass, opts){
+	_grabView: function _grabView(viewName, ViewClass, opts) {
 		this.baseTopbar = this.baseTopbar || this._loadBaseTopbar();
 		if (!_.has(this.views, viewName)){
   		this.views[viewName] = new ViewClass(_.extend({
@@ -50,7 +50,7 @@ module.exports = Backbone.Router.extend({
 		console.log(_.repeat('^', 200));
 		console.log(modNm + 'ENTERED FLIPTODISPLAY\n\n', style);
 		this._grabView('bearDisplayView', BearDisplayView, {
-			collection: new BearDisplayDataCollection
+			collection: BearDisplayDataCollection
 		});
 		console.log(modNm + 'fillToDisplay:: bearDisplayView:', style);
 		console.log(this.views.bearDisplayView);

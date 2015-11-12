@@ -4,6 +4,26 @@
 		"selected_items":
 		[
 			[
+				"display_page",
+				"display_page_table_data"
+			],
+			[
+				"font-s",
+				"fontSize = 'x-large'	Style CSS"
+			],
+			[
+				"_reduc",
+				"_reduceObject	lodash--reduce_object"
+			],
+			[
+				"BearDisplay",
+				"BearDisplayDataCollection"
+			],
+			[
+				"mod",
+				"model"
+			],
+			[
 				"html_",
 				"html_textFormSubmit	html--textFormSubmit"
 			],
@@ -352,10 +372,61 @@
 	"buffers":
 	[
 		{
-			"file": "client/index.js",
+			"file": "client/core_views/bear-display-view.js",
 			"settings":
 			{
-				"buffer_size": 4795,
+				"buffer_size": 2517,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client/models/bear-display-data.js",
+			"settings":
+			{
+				"buffer_size": 863,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "webpack.config.js",
+			"settings":
+			{
+				"buffer_size": 2277,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "/*! dustjs-linkedin - v2.7.2\n* http://dustjs.com/\n* Copyright (c) 2015 Aleksander Williams; Released under the MIT License */\n(function (root, factory) {\n  if (typeof define === 'function' && define.amd && define.amd.dust === true) {\n    define('dust.core', [], factory);\n  } else if (typeof exports === 'object') {\n    module.exports = factory();\n  } else {\n    root.dust = factory();\n  }\n}(this, function() {\n  var dust = {\n        \"version\": \"2.7.2\"\n      },\n      NONE = 'NONE', ERROR = 'ERROR', WARN = 'WARN', INFO = 'INFO', DEBUG = 'DEBUG',\n      EMPTY_FUNC = function() {};\n\n  dust.config = {\n    whitespace: false,\n    amd: false,\n    cjs: false,\n    cache: true\n  };\n\n  // Directive aliases to minify code\n  dust._aliases = {\n    \"write\": \"w\",\n    \"end\": \"e\",\n    \"map\": \"m\",\n    \"render\": \"r\",\n    \"reference\": \"f\",\n    \"section\": \"s\",\n    \"exists\": \"x\",\n    \"notexists\": \"nx\",\n    \"block\": \"b\",\n    \"partial\": \"p\",\n    \"helper\": \"h\"\n  };\n\n  (function initLogging() {\n    /*global process, console*/\n    var loggingLevels = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, NONE: 4 },\n        consoleLog,\n        log;\n\n    if (typeof console !== 'undefined' && console.log) {\n      consoleLog = console.log;\n      if(typeof consoleLog === 'function') {\n        log = function() {\n          consoleLog.apply(console, arguments);\n        };\n      } else {\n        log = function() {\n          consoleLog(Array.prototype.slice.apply(arguments).join(' '));\n        };\n      }\n    } else {\n      log = EMPTY_FUNC;\n    }\n\n    /**\n     * Filters messages based on `dust.debugLevel`.\n     * This default implementation will print to the console if it exists.\n     * @param {String|Error} message the message to print/throw\n     * @param {String} type the severity of the message(ERROR, WARN, INFO, or DEBUG)\n     * @public\n     */\n    dust.log = function(message, type) {\n      type = type || INFO;\n      if (loggingLevels[type] >= loggingLevels[dust.debugLevel]) {\n        log('[DUST:' + type + ']', message);\n      }\n    };\n\n    dust.debugLevel = NONE;\n    if(typeof process !== 'undefined' && process.env && /\\bdust\\b/.test(process.env.DEBUG)) {\n      dust.debugLevel = DEBUG;\n    }\n\n  }());\n\n  dust.helpers = {};\n\n  dust.cache = {};\n\n  dust.register = function(name, tmpl) {\n    if (!name) {\n      return;\n    }\n    tmpl.templateName = name;\n    if (dust.config.cache !== false) {\n      dust.cache[name] = tmpl;\n    }\n  };\n\n  dust.render = function(nameOrTemplate, context, callback) {\n    var chunk = new Stub(callback).head;\n    try {\n      load(nameOrTemplate, chunk, context).end();\n    } catch (err) {\n      chunk.setError(err);\n    }\n  };\n\n  dust.stream = function(nameOrTemplate, context) {\n    var stream = new Stream(),\n        chunk = stream.head;\n    dust.nextTick(function() {\n      try {\n        load(nameOrTemplate, chunk, context).end();\n      } catch (err) {\n        chunk.setError(err);\n      }\n    });\n    return stream;\n  };\n\n  /**\n   * Extracts a template function (body_0) from whatever is passed.\n   * @param nameOrTemplate {*} Could be:\n   *   - the name of a template to load from cache\n   *   - a CommonJS-compiled template (a function with a `template` property)\n   *   - a template function\n   * @param loadFromCache {Boolean} if false, don't look in the cache\n   * @return {Function} a template function, if found\n   */\n  function getTemplate(nameOrTemplate, loadFromCache/*=true*/) {\n    if(!nameOrTemplate) {\n      return;\n    }\n    if(typeof nameOrTemplate === 'function' && nameOrTemplate.template) {\n      // Sugar away CommonJS module templates\n      return nameOrTemplate.template;\n    }\n    if(dust.isTemplateFn(nameOrTemplate)) {\n      // Template functions passed directly\n      return nameOrTemplate;\n    }\n    if(loadFromCache !== false) {\n      // Try loading a template with this name from cache\n      return dust.cache[nameOrTemplate];\n    }\n  }\n\n  function load(nameOrTemplate, chunk, context) {\n    if(!nameOrTemplate) {\n      return chunk.setError(new Error('No template or template name provided to render'));\n    }\n\n    var template = getTemplate(nameOrTemplate, dust.config.cache);\n\n    if (template) {\n      return template(chunk, Context.wrap(context, template.templateName));\n    } else {\n      if (dust.onLoad) {\n        return chunk.map(function(chunk) {\n          // Alias just so it's easier to read that this would always be a name\n          var name = nameOrTemplate;\n          // Three possible scenarios for a successful callback:\n          //   - `require(nameOrTemplate)(dust); cb()`\n          //   - `src = readFile('src.dust'); cb(null, src)`\n          //   - `compiledTemplate = require(nameOrTemplate)(dust); cb(null, compiledTemplate)`\n          function done(err, srcOrTemplate) {\n            var template;\n            if (err) {\n              return chunk.setError(err);\n            }\n            // Prefer a template that is passed via callback over the cached version.\n            template = getTemplate(srcOrTemplate, false) || getTemplate(name, dust.config.cache);\n            if (!template) {\n              // It's a template string, compile it and register under `name`\n              if(dust.compile) {\n                template = dust.loadSource(dust.compile(srcOrTemplate, name));\n              } else {\n                return chunk.setError(new Error('Dust compiler not available'));\n              }\n            }\n            template(chunk, Context.wrap(context, template.templateName)).end();\n          }\n\n          if(dust.onLoad.length === 3) {\n            dust.onLoad(name, context.options, done);\n          } else {\n            dust.onLoad(name, done);\n          }\n        });\n      }\n      return chunk.setError(new Error('Template Not Found: ' + nameOrTemplate));\n    }\n  }\n\n  dust.loadSource = function(source) {\n    /*jshint evil:true*/\n    return eval(source);\n  };\n\n  if (Array.isArray) {\n    dust.isArray = Array.isArray;\n  } else {\n    dust.isArray = function(arr) {\n      return Object.prototype.toString.call(arr) === '[object Array]';\n    };\n  }\n\n  dust.nextTick = (function() {\n    return function(callback) {\n      setTimeout(callback, 0);\n    };\n  })();\n\n  /**\n   * Dust has its own rules for what is \"empty\"-- which is not the same as falsy.\n   * Empty arrays, null, and undefined are empty\n   */\n  dust.isEmpty = function(value) {\n    if (value === 0) {\n      return false;\n    }\n    if (dust.isArray(value) && !value.length) {\n      return true;\n    }\n    return !value;\n  };\n\n  dust.isEmptyObject = function(obj) {\n    var key;\n    if (obj === null) {\n      return false;\n    }\n    if (obj === undefined) {\n      return false;\n    }\n    if (obj.length > 0) {\n      return false;\n    }\n    for (key in obj) {\n      if (Object.prototype.hasOwnProperty.call(obj, key)) {\n        return false;\n      }\n    }\n    return true;\n  };\n\n  dust.isTemplateFn = function(elem) {\n    return typeof elem === 'function' &&\n           elem.__dustBody;\n  };\n\n  /**\n   * Decide somewhat-naively if something is a Thenable.\n   * @param elem {*} object to inspect\n   * @return {Boolean} is `elem` a Thenable?\n   */\n  dust.isThenable = function(elem) {\n    return elem &&\n           typeof elem === 'object' &&\n           typeof elem.then === 'function';\n  };\n\n  /**\n   * Decide very naively if something is a Stream.\n   * @param elem {*} object to inspect\n   * @return {Boolean} is `elem` a Stream?\n   */\n  dust.isStreamable = function(elem) {\n    return elem &&\n           typeof elem.on === 'function' &&\n           typeof elem.pipe === 'function';\n  };\n\n  // apply the filter chain and return the output string\n  dust.filter = function(string, auto, filters, context) {\n    var i, len, name, filter;\n    if (filters) {\n      for (i = 0, len = filters.length; i < len; i++) {\n        name = filters[i];\n        if (!name.length) {\n          continue;\n        }\n        filter = dust.filters[name];\n        if (name === 's') {\n          auto = null;\n        } else if (typeof filter === 'function') {\n          string = filter(string, context);\n        } else {\n          dust.log('Invalid filter `' + name + '`', WARN);\n        }\n      }\n    }\n    // by default always apply the h filter, unless asked to unescape with |s\n    if (auto) {\n      string = dust.filters[auto](string, context);\n    }\n    return string;\n  };\n\n  dust.filters = {\n    h: function(value) { return dust.escapeHtml(value); },\n    j: function(value) { return dust.escapeJs(value); },\n    u: encodeURI,\n    uc: encodeURIComponent,\n    js: function(value) { return dust.escapeJSON(value); },\n    jp: function(value) {\n      if (!JSON) {dust.log('JSON is undefined; could not parse `' + value + '`', WARN);\n        return value;\n      } else {\n        return JSON.parse(value);\n      }\n    }\n  };\n\n  function Context(stack, global, options, blocks, templateName) {\n    if(stack !== undefined && !(stack instanceof Stack)) {\n      stack = new Stack(stack);\n    }\n    this.stack = stack;\n    this.global = global;\n    this.options = options;\n    this.blocks = blocks;\n    this.templateName = templateName;\n  }\n\n  dust.makeBase = dust.context = function(global, options) {\n    return new Context(undefined, global, options);\n  };\n\n  /**\n   * Factory function that creates a closure scope around a Thenable-callback.\n   * Returns a function that can be passed to a Thenable that will resume a\n   * Context lookup once the Thenable resolves with new data, adding that new\n   * data to the lookup stack.\n   */\n  function getWithResolvedData(ctx, cur, down) {\n    return function(data) {\n      return ctx.push(data)._get(cur, down);\n    };\n  }\n\n  Context.wrap = function(context, name) {\n    if (context instanceof Context) {\n      return context;\n    }\n    return new Context(context, {}, {}, null, name);\n  };\n\n  /**\n   * Public API for getting a value from the context.\n   * @method get\n   * @param {string|array} path The path to the value. Supported formats are:\n   * 'key'\n   * 'path.to.key'\n   * '.path.to.key'\n   * ['path', 'to', 'key']\n   * ['key']\n   * @param {boolean} [cur=false] Boolean which determines if the search should be limited to the\n   * current context (true), or if get should search in parent contexts as well (false).\n   * @public\n   * @returns {string|object}\n   */\n  Context.prototype.get = function(path, cur) {\n    if (typeof path === 'string') {\n      if (path[0] === '.') {\n        cur = true;\n        path = path.substr(1);\n      }\n      path = path.split('.');\n    }\n    return this._get(cur, path);\n  };\n\n  /**\n   * Get a value from the context\n   * @method _get\n   * @param {boolean} cur Get only from the current context\n   * @param {array} down An array of each step in the path\n   * @private\n   * @return {string | object}\n   */\n  Context.prototype._get = function(cur, down) {\n    var ctx = this.stack || {},\n        i = 1,\n        value, first, len, ctxThis, fn;\n\n    first = down[0];\n    len = down.length;\n\n    if (cur && len === 0) {\n      ctxThis = ctx;\n      ctx = ctx.head;\n    } else {\n      if (!cur) {\n        // Search up the stack for the first value\n        while (ctx) {\n          if (ctx.isObject) {\n            ctxThis = ctx.head;\n            value = ctx.head[first];\n            if (value !== undefined) {\n              break;\n            }\n          }\n          ctx = ctx.tail;\n        }\n\n        // Try looking in the global context if we haven't found anything yet\n        if (value !== undefined) {\n          ctx = value;\n        } else {\n          ctx = this.global && this.global[first];\n        }\n      } else if (ctx) {\n        // if scope is limited by a leading dot, don't search up the tree\n        if(ctx.head) {\n          ctx = ctx.head[first];\n        } else {\n          // context's head is empty, value we are searching for is not defined\n          ctx = undefined;\n        }\n      }\n\n      while (ctx && i < len) {\n        if (dust.isThenable(ctx)) {\n          // Bail early by returning a Thenable for the remainder of the search tree\n          return ctx.then(getWithResolvedData(this, cur, down.slice(i)));\n        }\n        ctxThis = ctx;\n        ctx = ctx[down[i]];\n        i++;\n      }\n    }\n\n    if (typeof ctx === 'function') {\n      fn = function() {\n        try {\n          return ctx.apply(ctxThis, arguments);\n        } catch (err) {\n          dust.log(err, ERROR);\n          throw err;\n        }\n      };\n      fn.__dustBody = !!ctx.__dustBody;\n      return fn;\n    } else {\n      if (ctx === undefined) {\n        dust.log('Cannot find reference `{' + down.join('.') + '}` in template `' + this.getTemplateName() + '`', INFO);\n      }\n      return ctx;\n    }\n  };\n\n  Context.prototype.getPath = function(cur, down) {\n    return this._get(cur, down);\n  };\n\n  Context.prototype.push = function(head, idx, len) {\n    if(head === undefined) {\n      dust.log(\"Not pushing an undefined variable onto the context\", INFO);\n      return this;\n    }\n    return this.rebase(new Stack(head, this.stack, idx, len));\n  };\n\n  Context.prototype.pop = function() {\n    var head = this.current();\n    this.stack = this.stack && this.stack.tail;\n    return head;\n  };\n\n  Context.prototype.rebase = function(head) {\n    return new Context(head, this.global, this.options, this.blocks, this.getTemplateName());\n  };\n\n  Context.prototype.clone = function() {\n    var context = this.rebase();\n    context.stack = this.stack;\n    return context;\n  };\n\n  Context.prototype.current = function() {\n    return this.stack && this.stack.head;\n  };\n\n  Context.prototype.getBlock = function(key) {\n    var blocks, len, fn;\n\n    if (typeof key === 'function') {\n      key = key(new Chunk(), this).data.join('');\n    }\n\n    blocks = this.blocks;\n\n    if (!blocks) {\n      dust.log('No blocks for context `' + key + '` in template `' + this.getTemplateName() + '`', DEBUG);\n      return false;\n    }\n\n    len = blocks.length;\n    while (len--) {\n      fn = blocks[len][key];\n      if (fn) {\n        return fn;\n      }\n    }\n\n    dust.log('Malformed template `' + this.getTemplateName() + '` was missing one or more blocks.');\n    return false;\n  };\n\n  Context.prototype.shiftBlocks = function(locals) {\n    var blocks = this.blocks,\n        newBlocks;\n\n    if (locals) {\n      if (!blocks) {\n        newBlocks = [locals];\n      } else {\n        newBlocks = blocks.concat([locals]);\n      }\n      return new Context(this.stack, this.global, this.options, newBlocks, this.getTemplateName());\n    }\n    return this;\n  };\n\n  Context.prototype.resolve = function(body) {\n    var chunk;\n\n    if(typeof body !== 'function') {\n      return body;\n    }\n    chunk = new Chunk().render(body, this);\n    if(chunk instanceof Chunk) {\n      return chunk.data.join(''); // ie7 perf\n    }\n    return chunk;\n  };\n\n  Context.prototype.getTemplateName = function() {\n    return this.templateName;\n  };\n\n  function Stack(head, tail, idx, len) {\n    this.tail = tail;\n    this.isObject = head && typeof head === 'object';\n    this.head = head;\n    this.index = idx;\n    this.of = len;\n  }\n\n  function Stub(callback) {\n    this.head = new Chunk(this);\n    this.callback = callback;\n    this.out = '';\n  }\n\n  Stub.prototype.flush = function() {\n    var chunk = this.head;\n\n    while (chunk) {\n      if (chunk.flushable) {\n        this.out += chunk.data.join(''); //ie7 perf\n      } else if (chunk.error) {\n        this.callback(chunk.error);\n        dust.log('Rendering failed with error `' + chunk.error + '`', ERROR);\n        this.flush = EMPTY_FUNC;\n        return;\n      } else {\n        return;\n      }\n      chunk = chunk.next;\n      this.head = chunk;\n    }\n    this.callback(null, this.out);\n  };\n\n  /**\n   * Creates an interface sort of like a Streams2 ReadableStream.\n   */\n  function Stream() {\n    this.head = new Chunk(this);\n  }\n\n  Stream.prototype.flush = function() {\n    var chunk = this.head;\n\n    while(chunk) {\n      if (chunk.flushable) {\n        this.emit('data', chunk.data.join('')); //ie7 perf\n      } else if (chunk.error) {\n        this.emit('error', chunk.error);\n        this.emit('end');\n        dust.log('Streaming failed with error `' + chunk.error + '`', ERROR);\n        this.flush = EMPTY_FUNC;\n        return;\n      } else {\n        return;\n      }\n      chunk = chunk.next;\n      this.head = chunk;\n    }\n    this.emit('end');\n  };\n\n  /**\n   * Executes listeners for `type` by passing data. Note that this is different from a\n   * Node stream, which can pass an arbitrary number of arguments\n   * @return `true` if event had listeners, `false` otherwise\n   */\n  Stream.prototype.emit = function(type, data) {\n    var events = this.events || {},\n        handlers = events[type] || [],\n        i, l;\n\n    if (!handlers.length) {\n      dust.log('Stream broadcasting, but no listeners for `' + type + '`', DEBUG);\n      return false;\n    }\n\n    handlers = handlers.slice(0);\n    for (i = 0, l = handlers.length; i < l; i++) {\n      handlers[i](data);\n    }\n    return true;\n  };\n\n  Stream.prototype.on = function(type, callback) {\n    var events = this.events = this.events || {},\n        handlers = events[type] = events[type] || [];\n\n    if(typeof callback !== 'function') {\n      dust.log('No callback function provided for `' + type + '` event listener', WARN);\n    } else {\n      handlers.push(callback);\n    }\n    return this;\n  };\n\n  /**\n   * Pipes to a WritableStream. Note that backpressure isn't implemented,\n   * so we just write as fast as we can.\n   * @param stream {WritableStream}\n   * @return self\n   */\n  Stream.prototype.pipe = function(stream) {\n    if(typeof stream.write !== 'function' ||\n       typeof stream.end !== 'function') {\n      dust.log('Incompatible stream passed to `pipe`', WARN);\n      return this;\n    }\n\n    var destEnded = false;\n\n    if(typeof stream.emit === 'function') {\n      stream.emit('pipe', this);\n    }\n\n    if(typeof stream.on === 'function') {\n      stream.on('error', function() {\n        destEnded = true;\n      });\n    }\n\n    return this\n    .on('data', function(data) {\n      if(destEnded) {\n        return;\n      }\n      try {\n        stream.write(data, 'utf8');\n      } catch (err) {\n        dust.log(err, ERROR);\n      }\n    })\n    .on('end', function() {\n      if(destEnded) {\n        return;\n      }\n      try {\n        stream.end();\n        destEnded = true;\n      } catch (err) {\n        dust.log(err, ERROR);\n      }\n    });\n  };\n\n  function Chunk(root, next, taps) {\n    this.root = root;\n    this.next = next;\n    this.data = []; //ie7 perf\n    this.flushable = false;\n    this.taps = taps;\n  }\n\n  Chunk.prototype.write = function(data) {\n    var taps = this.taps;\n\n    if (taps) {\n      data = taps.go(data);\n    }\n    this.data.push(data);\n    return this;\n  };\n\n  Chunk.prototype.end = function(data) {\n    if (data) {\n      this.write(data);\n    }\n    this.flushable = true;\n    this.root.flush();\n    return this;\n  };\n\n  Chunk.prototype.map = function(callback) {\n    var cursor = new Chunk(this.root, this.next, this.taps),\n        branch = new Chunk(this.root, cursor, this.taps);\n\n    this.next = branch;\n    this.flushable = true;\n    try {\n      callback(branch);\n    } catch(err) {\n      dust.log(err, ERROR);\n      branch.setError(err);\n    }\n    return cursor;\n  };\n\n  Chunk.prototype.tap = function(tap) {\n    var taps = this.taps;\n\n    if (taps) {\n      this.taps = taps.push(tap);\n    } else {\n      this.taps = new Tap(tap);\n    }\n    return this;\n  };\n\n  Chunk.prototype.untap = function() {\n    this.taps = this.taps.tail;\n    return this;\n  };\n\n  Chunk.prototype.render = function(body, context) {\n    return body(this, context);\n  };\n\n  Chunk.prototype.reference = function(elem, context, auto, filters) {\n    if (typeof elem === 'function') {\n      elem = elem.apply(context.current(), [this, context, null, {auto: auto, filters: filters}]);\n      if (elem instanceof Chunk) {\n        return elem;\n      } else {\n        return this.reference(elem, context, auto, filters);\n      }\n    }\n    if (dust.isThenable(elem)) {\n      return this.await(elem, context, null, auto, filters);\n    } else if (dust.isStreamable(elem)) {\n      return this.stream(elem, context, null, auto, filters);\n    } else if (!dust.isEmpty(elem)) {\n      return this.write(dust.filter(elem, auto, filters, context));\n    } else {\n      return this;\n    }\n  };\n\n  Chunk.prototype.section = function(elem, context, bodies, params) {\n    var body = bodies.block,\n        skip = bodies['else'],\n        chunk = this,\n        i, len, head;\n\n    if (typeof elem === 'function' && !dust.isTemplateFn(elem)) {\n      try {\n        elem = elem.apply(context.current(), [this, context, bodies, params]);\n      } catch(err) {\n        dust.log(err, ERROR);\n        return this.setError(err);\n      }\n      // Functions that return chunks are assumed to have handled the chunk manually.\n      // Make that chunk the current one and go to the next method in the chain.\n      if (elem instanceof Chunk) {\n        return elem;\n      }\n    }\n\n    if (dust.isEmptyObject(bodies)) {\n      // No bodies to render, and we've already invoked any function that was available in\n      // hopes of returning a Chunk.\n      return chunk;\n    }\n\n    if (!dust.isEmptyObject(params)) {\n      context = context.push(params);\n    }\n\n    /*\n    Dust's default behavior is to enumerate over the array elem, passing each object in the array to the block.\n    When elem resolves to a value or object instead of an array, Dust sets the current context to the value\n    and renders the block one time.\n    */\n    if (dust.isArray(elem)) {\n      if (body) {\n        len = elem.length;\n        if (len > 0) {\n          head = context.stack && context.stack.head || {};\n          head.$len = len;\n          for (i = 0; i < len; i++) {\n            head.$idx = i;\n            chunk = body(chunk, context.push(elem[i], i, len));\n          }\n          head.$idx = undefined;\n          head.$len = undefined;\n          return chunk;\n        } else if (skip) {\n          return skip(this, context);\n        }\n      }\n    } else if (dust.isThenable(elem)) {\n      return this.await(elem, context, bodies);\n    } else if (dust.isStreamable(elem)) {\n      return this.stream(elem, context, bodies);\n    } else if (elem === true) {\n     // true is truthy but does not change context\n      if (body) {\n        return body(this, context);\n      }\n    } else if (elem || elem === 0) {\n       // everything that evaluates to true are truthy ( e.g. Non-empty strings and Empty objects are truthy. )\n       // zero is truthy\n       // for anonymous functions that did not returns a chunk, truthiness is evaluated based on the return value\n      if (body) {\n        return body(this, context.push(elem));\n      }\n     // nonexistent, scalar false value, scalar empty string, null,\n     // undefined are all falsy\n    } else if (skip) {\n      return skip(this, context);\n    }\n    dust.log('Section without corresponding key in template `' + context.getTemplateName() + '`', DEBUG);\n    return this;\n  };\n\n  Chunk.prototype.exists = function(elem, context, bodies) {\n    var body = bodies.block,\n        skip = bodies['else'];\n\n    if (!dust.isEmpty(elem)) {\n      if (body) {\n        return body(this, context);\n      }\n      dust.log('No block for exists check in template `' + context.getTemplateName() + '`', DEBUG);\n    } else if (skip) {\n      return skip(this, context);\n    }\n    return this;\n  };\n\n  Chunk.prototype.notexists = function(elem, context, bodies) {\n    var body = bodies.block,\n        skip = bodies['else'];\n\n    if (dust.isEmpty(elem)) {\n      if (body) {\n        return body(this, context);\n      }\n      dust.log('No block for not-exists check in template `' + context.getTemplateName() + '`', DEBUG);\n    } else if (skip) {\n      return skip(this, context);\n    }\n    return this;\n  };\n\n  Chunk.prototype.block = function(elem, context, bodies) {\n    var body = elem || bodies.block;\n\n    if (body) {\n      return body(this, context);\n    }\n    return this;\n  };\n\n  Chunk.prototype.partial = function(elem, context, partialContext, params) {\n    var head;\n\n    if(params === undefined) {\n      // Compatibility for < 2.7.0 where `partialContext` did not exist\n      params = partialContext;\n      partialContext = context;\n    }\n\n    if (!dust.isEmptyObject(params)) {\n      partialContext = partialContext.clone();\n      head = partialContext.pop();\n      partialContext = partialContext.push(params)\n                                     .push(head);\n    }\n\n    if (dust.isTemplateFn(elem)) {\n      // The eventual result of evaluating `elem` is a partial name\n      // Load the partial after getting its name and end the async chunk\n      return this.capture(elem, context, function(name, chunk) {\n        partialContext.templateName = name;\n        load(name, chunk, partialContext).end();\n      });\n    } else {\n      partialContext.templateName = elem;\n      return load(elem, this, partialContext);\n    }\n  };\n\n  Chunk.prototype.helper = function(name, context, bodies, params, auto) {\n    var chunk = this,\n        filters = params.filters,\n        ret;\n\n    // Pre-2.7.1 compat: if auto is undefined, it's an old template. Automatically escape\n    if (auto === undefined) {\n      auto = 'h';\n    }\n\n    // handle invalid helpers, similar to invalid filters\n    if(dust.helpers[name]) {\n      try {\n        ret = dust.helpers[name](chunk, context, bodies, params);\n        if (ret instanceof Chunk) {\n          return ret;\n        }\n        if(typeof filters === 'string') {\n          filters = filters.split('|');\n        }\n        if (!dust.isEmptyObject(bodies)) {\n          return chunk.section(ret, context, bodies, params);\n        }\n        // Helpers act slightly differently from functions in context in that they will act as\n        // a reference if they are self-closing (due to grammar limitations)\n        // In the Chunk.await function we check to make sure bodies is null before acting as a reference\n        return chunk.reference(ret, context, auto, filters);\n      } catch(err) {\n        dust.log('Error in helper `' + name + '`: ' + err.message, ERROR);\n        return chunk.setError(err);\n      }\n    } else {\n      dust.log('Helper `' + name + '` does not exist', WARN);\n      return chunk;\n    }\n  };\n\n  /**\n   * Reserve a chunk to be evaluated once a thenable is resolved or rejected\n   * @param thenable {Thenable} the target thenable to await\n   * @param context {Context} context to use to render the deferred chunk\n   * @param bodies {Object} must contain a \"body\", may contain an \"error\"\n   * @param auto {String} automatically apply this filter if the Thenable is a reference\n   * @param filters {Array} apply these filters if the Thenable is a reference\n   * @return {Chunk}\n   */\n  Chunk.prototype.await = function(thenable, context, bodies, auto, filters) {\n    return this.map(function(chunk) {\n      thenable.then(function(data) {\n        if (bodies) {\n          chunk = chunk.section(data, context, bodies);\n        } else {\n          // Actually a reference. Self-closing sections don't render\n          chunk = chunk.reference(data, context, auto, filters);\n        }\n        chunk.end();\n      }, function(err) {\n        var errorBody = bodies && bodies.error;\n        if(errorBody) {\n          chunk.render(errorBody, context.push(err)).end();\n        } else {\n          dust.log('Unhandled promise rejection in `' + context.getTemplateName() + '`', INFO);\n          chunk.end();\n        }\n      });\n    });\n  };\n\n  /**\n   * Reserve a chunk to be evaluated with the contents of a streamable.\n   * Currently an error event will bomb out the stream. Once an error\n   * is received, we push it to an {:error} block if one exists, and log otherwise,\n   * then stop listening to the stream.\n   * @param streamable {Streamable} the target streamable that will emit events\n   * @param context {Context} context to use to render each thunk\n   * @param bodies {Object} must contain a \"body\", may contain an \"error\"\n   * @return {Chunk}\n   */\n  Chunk.prototype.stream = function(stream, context, bodies, auto, filters) {\n    var body = bodies && bodies.block,\n        errorBody = bodies && bodies.error;\n    return this.map(function(chunk) {\n      var ended = false;\n      stream\n        .on('data', function data(thunk) {\n          if(ended) {\n            return;\n          }\n          if(body) {\n            // Fork a new chunk out of the blockstream so that we can flush it independently\n            chunk = chunk.map(function(chunk) {\n              chunk.render(body, context.push(thunk)).end();\n            });\n          } else if(!bodies) {\n            // When actually a reference, don't fork, just write into the master async chunk\n            chunk = chunk.reference(thunk, context, auto, filters);\n          }\n        })\n        .on('error', function error(err) {\n          if(ended) {\n            return;\n          }\n          if(errorBody) {\n            chunk.render(errorBody, context.push(err));\n          } else {\n            dust.log('Unhandled stream error in `' + context.getTemplateName() + '`', INFO);\n          }\n          if(!ended) {\n            ended = true;\n            chunk.end();\n          }\n        })\n        .on('end', function end() {\n          if(!ended) {\n            ended = true;\n            chunk.end();\n          }\n        });\n    });\n  };\n\n  Chunk.prototype.capture = function(body, context, callback) {\n    return this.map(function(chunk) {\n      var stub = new Stub(function(err, out) {\n        if (err) {\n          chunk.setError(err);\n        } else {\n          callback(out, chunk);\n        }\n      });\n      body(stub.head, context).end();\n    });\n  };\n\n  Chunk.prototype.setError = function(err) {\n    this.error = err;\n    this.root.flush();\n    return this;\n  };\n\n  // Chunk aliases\n  for(var f in Chunk.prototype) {\n    if(dust._aliases[f]) {\n      Chunk.prototype[dust._aliases[f]] = Chunk.prototype[f];\n    }\n  }\n\n  function Tap(head, tail) {\n    this.head = head;\n    this.tail = tail;\n  }\n\n  Tap.prototype.push = function(tap) {\n    return new Tap(tap, this);\n  };\n\n  Tap.prototype.go = function(value) {\n    var tap = this;\n\n    while(tap) {\n      value = tap.head(value);\n      tap = tap.tail;\n    }\n    return value;\n  };\n\n  var HCHARS = /[&<>\"']/,\n      AMP    = /&/g,\n      LT     = /</g,\n      GT     = />/g,\n      QUOT   = /\\\"/g,\n      SQUOT  = /\\'/g;\n\n  dust.escapeHtml = function(s) {\n    if (typeof s === \"string\" || (s && typeof s.toString === \"function\")) {\n      if (typeof s !== \"string\") {\n        s = s.toString();\n      }\n      if (!HCHARS.test(s)) {\n        return s;\n      }\n      return s.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(QUOT,'&quot;').replace(SQUOT, '&#39;');\n    }\n    return s;\n  };\n\n  var BS = /\\\\/g,\n      FS = /\\//g,\n      CR = /\\r/g,\n      LS = /\\u2028/g,\n      PS = /\\u2029/g,\n      NL = /\\n/g,\n      LF = /\\f/g,\n      SQ = /'/g,\n      DQ = /\"/g,\n      TB = /\\t/g;\n\n  dust.escapeJs = function(s) {\n    if (typeof s === 'string') {\n      return s\n        .replace(BS, '\\\\\\\\')\n        .replace(FS, '\\\\/')\n        .replace(DQ, '\\\\\"')\n        .replace(SQ, '\\\\\\'')\n        .replace(CR, '\\\\r')\n        .replace(LS, '\\\\u2028')\n        .replace(PS, '\\\\u2029')\n        .replace(NL, '\\\\n')\n        .replace(LF, '\\\\f')\n        .replace(TB, '\\\\t');\n    }\n    return s;\n  };\n\n  dust.escapeJSON = function(o) {\n    if (!JSON) {\n      dust.log('JSON is undefined; could not escape `' + o + '`', WARN);\n      return o;\n    } else {\n      return JSON.stringify(o)\n        .replace(LS, '\\\\u2028')\n        .replace(PS, '\\\\u2029')\n        .replace(LT, '\\\\u003c');\n    }\n  };\n\n  return dust;\n\n}));\n\n(function(root, factory) {\n  if (typeof define === \"function\" && define.amd && define.amd.dust === true) {\n    define(\"dust.parse\", [\"dust.core\"], function(dust) {\n      return factory(dust).parse;\n    });\n  } else if (typeof exports === 'object') {\n    // in Node, require this file if we want to use the parser as a standalone module\n    module.exports = factory(require('./dust'));\n    // @see server file for parser methods exposed in node\n  } else {\n    // in the browser, store the factory output if we want to use the parser directly\n    factory(root.dust);\n  }\n}(this, function(dust) {\n  var parser = (function() {\n  /*\n   * Generated by PEG.js 0.8.0.\n   *\n   * http://pegjs.majda.cz/\n   */\n\n  function peg$subclass(child, parent) {\n    function ctor() { this.constructor = child; }\n    ctor.prototype = parent.prototype;\n    child.prototype = new ctor();\n  }\n\n  function SyntaxError(message, expected, found, offset, line, column) {\n    this.message  = message;\n    this.expected = expected;\n    this.found    = found;\n    this.offset   = offset;\n    this.line     = line;\n    this.column   = column;\n\n    this.name     = \"SyntaxError\";\n  }\n\n  peg$subclass(SyntaxError, Error);\n\n  function parse(input) {\n    var options = arguments.length > 1 ? arguments[1] : {},\n\n        peg$FAILED = {},\n\n        peg$startRuleFunctions = { start: peg$parsestart },\n        peg$startRuleFunction  = peg$parsestart,\n\n        peg$c0 = [],\n        peg$c1 = function(p) {\n            var body = [\"body\"].concat(p);\n            return withPosition(body);\n          },\n        peg$c2 = { type: \"other\", description: \"section\" },\n        peg$c3 = peg$FAILED,\n        peg$c4 = null,\n        peg$c5 = function(t, b, e, n) {\n            if( (!n) || (t[1].text !== n.text) ) {\n              error(\"Expected end tag for \"+t[1].text+\" but it was not found.\");\n            }\n            return true;\n          },\n        peg$c6 = void 0,\n        peg$c7 = function(t, b, e, n) {\n            e.push([\"param\", [\"literal\", \"block\"], b]);\n            t.push(e, [\"filters\"]);\n            return withPosition(t)\n          },\n        peg$c8 = \"/\",\n        peg$c9 = { type: \"literal\", value: \"/\", description: \"\\\"/\\\"\" },\n        peg$c10 = function(t) {\n            t.push([\"bodies\"], [\"filters\"]);\n            return withPosition(t)\n          },\n        peg$c11 = /^[#?\\^<+@%]/,\n        peg$c12 = { type: \"class\", value: \"[#?\\\\^<+@%]\", description: \"[#?\\\\^<+@%]\" },\n        peg$c13 = function(t, n, c, p) { return [t, n, c, p] },\n        peg$c14 = { type: \"other\", description: \"end tag\" },\n        peg$c15 = function(n) { return n },\n        peg$c16 = \":\",\n        peg$c17 = { type: \"literal\", value: \":\", description: \"\\\":\\\"\" },\n        peg$c18 = function(n) {return n},\n        peg$c19 = function(n) { return n ? [\"context\", n] : [\"context\"] },\n        peg$c20 = { type: \"other\", description: \"params\" },\n        peg$c21 = \"=\",\n        peg$c22 = { type: \"literal\", value: \"=\", description: \"\\\"=\\\"\" },\n        peg$c23 = function(k, v) {return [\"param\", [\"literal\", k], v]},\n        peg$c24 = function(p) { return [\"params\"].concat(p) },\n        peg$c25 = { type: \"other\", description: \"bodies\" },\n        peg$c26 = function(p) { return [\"bodies\"].concat(p) },\n        peg$c27 = { type: \"other\", description: \"reference\" },\n        peg$c28 = function(n, f) { return withPosition([\"reference\", n, f]) },\n        peg$c29 = { type: \"other\", description: \"partial\" },\n        peg$c30 = \">\",\n        peg$c31 = { type: \"literal\", value: \">\", description: \"\\\">\\\"\" },\n        peg$c32 = \"+\",\n        peg$c33 = { type: \"literal\", value: \"+\", description: \"\\\"+\\\"\" },\n        peg$c34 = function(k) {return [\"literal\", k]},\n        peg$c35 = function(s, n, c, p) {\n            var key = (s === \">\") ? \"partial\" : s;\n            return withPosition([key, n, c, p])\n          },\n        peg$c36 = { type: \"other\", description: \"filters\" },\n        peg$c37 = \"|\",\n        peg$c38 = { type: \"literal\", value: \"|\", description: \"\\\"|\\\"\" },\n        peg$c39 = function(f) { return [\"filters\"].concat(f) },\n        peg$c40 = { type: \"other\", description: \"special\" },\n        peg$c41 = \"~\",\n        peg$c42 = { type: \"literal\", value: \"~\", description: \"\\\"~\\\"\" },\n        peg$c43 = function(k) { return withPosition([\"special\", k]) },\n        peg$c44 = { type: \"other\", description: \"identifier\" },\n        peg$c45 = function(p) {\n            var arr = [\"path\"].concat(p);\n            arr.text = p[1].join('.').replace(/,line,\\d+,col,\\d+/g,'');\n            return arr;\n          },\n        peg$c46 = function(k) {\n            var arr = [\"key\", k];\n            arr.text = k;\n            return arr;\n          },\n        peg$c47 = { type: \"other\", description: \"number\" },\n        peg$c48 = function(n) { return ['literal', n]; },\n        peg$c49 = { type: \"other\", description: \"float\" },\n        peg$c50 = \".\",\n        peg$c51 = { type: \"literal\", value: \".\", description: \"\\\".\\\"\" },\n        peg$c52 = function(l, r) { return parseFloat(l + \".\" + r); },\n        peg$c53 = { type: \"other\", description: \"unsigned_integer\" },\n        peg$c54 = /^[0-9]/,\n        peg$c55 = { type: \"class\", value: \"[0-9]\", description: \"[0-9]\" },\n        peg$c56 = function(digits) { return makeInteger(digits); },\n        peg$c57 = { type: \"other\", description: \"signed_integer\" },\n        peg$c58 = \"-\",\n        peg$c59 = { type: \"literal\", value: \"-\", description: \"\\\"-\\\"\" },\n        peg$c60 = function(sign, n) { return n * -1; },\n        peg$c61 = { type: \"other\", description: \"integer\" },\n        peg$c62 = { type: \"other\", description: \"path\" },\n        peg$c63 = function(k, d) {\n            d = d[0];\n            if (k && d) {\n              d.unshift(k);\n              return withPosition([false, d])\n            }\n            return withPosition([true, d])\n          },\n        peg$c64 = function(d) {\n            if (d.length > 0) {\n              return withPosition([true, d[0]])\n            }\n            return withPosition([true, []])\n          },\n        peg$c65 = { type: \"other\", description: \"key\" },\n        peg$c66 = /^[a-zA-Z_$]/,\n        peg$c67 = { type: \"class\", value: \"[a-zA-Z_$]\", description: \"[a-zA-Z_$]\" },\n        peg$c68 = /^[0-9a-zA-Z_$\\-]/,\n        peg$c69 = { type: \"class\", value: \"[0-9a-zA-Z_$\\\\-]\", description: \"[0-9a-zA-Z_$\\\\-]\" },\n        peg$c70 = function(h, t) { return h + t.join('') },\n        peg$c71 = { type: \"other\", description: \"array\" },\n        peg$c72 = function(n) {return n.join('')},\n        peg$c73 = function(a) {return a; },\n        peg$c74 = function(i, nk) { if(nk) { nk.unshift(i); } else {nk = [i] } return nk; },\n        peg$c75 = { type: \"other\", description: \"array_part\" },\n        peg$c76 = function(k) {return k},\n        peg$c77 = function(d, a) { if (a) { return d.concat(a); } else { return d; } },\n        peg$c78 = { type: \"other\", description: \"inline\" },\n        peg$c79 = \"\\\"\",\n        peg$c80 = { type: \"literal\", value: \"\\\"\", description: \"\\\"\\\\\\\"\\\"\" },\n        peg$c81 = function() { return withPosition([\"literal\", \"\"]) },\n        peg$c82 = function(l) { return withPosition([\"literal\", l]) },\n        peg$c83 = function(p) { return withPosition([\"body\"].concat(p)) },\n        peg$c84 = function(l) { return [\"buffer\", l] },\n        peg$c85 = { type: \"other\", description: \"buffer\" },\n        peg$c86 = function(e, w) { return withPosition([\"format\", e, w.join('')]) },\n        peg$c87 = { type: \"any\", description: \"any character\" },\n        peg$c88 = function(c) {return c},\n        peg$c89 = function(b) { return withPosition([\"buffer\", b.join('')]) },\n        peg$c90 = { type: \"other\", description: \"literal\" },\n        peg$c91 = /^[^\"]/,\n        peg$c92 = { type: \"class\", value: \"[^\\\"]\", description: \"[^\\\"]\" },\n        peg$c93 = function(b) { return b.join('') },\n        peg$c94 = \"\\\\\\\"\",\n        peg$c95 = { type: \"literal\", value: \"\\\\\\\"\", description: \"\\\"\\\\\\\\\\\\\\\"\\\"\" },\n        peg$c96 = function() { return '\"' },\n        peg$c97 = { type: \"other\", description: \"raw\" },\n        peg$c98 = \"{`\",\n        peg$c99 = { type: \"literal\", value: \"{`\", description: \"\\\"{`\\\"\" },\n        peg$c100 = \"`}\",\n        peg$c101 = { type: \"literal\", value: \"`}\", description: \"\\\"`}\\\"\" },\n        peg$c102 = function(character) {return character},\n        peg$c103 = function(rawText) { return withPosition([\"raw\", rawText.join('')]) },\n        peg$c104 = { type: \"other\", description: \"comment\" },\n        peg$c105 = \"{!\",\n        peg$c106 = { type: \"literal\", value: \"{!\", description: \"\\\"{!\\\"\" },\n        peg$c107 = \"!}\",\n        peg$c108 = { type: \"literal\", value: \"!}\", description: \"\\\"!}\\\"\" },\n        peg$c109 = function(c) { return withPosition([\"comment\", c.join('')]) },\n        peg$c110 = /^[#?\\^><+%:@\\/~%]/,\n        peg$c111 = { type: \"class\", value: \"[#?\\\\^><+%:@\\\\/~%]\", description: \"[#?\\\\^><+%:@\\\\/~%]\" },\n        peg$c112 = \"{\",\n        peg$c113 = { type: \"literal\", value: \"{\", description: \"\\\"{\\\"\" },\n        peg$c114 = \"}\",\n        peg$c115 = { type: \"literal\", value: \"}\", description: \"\\\"}\\\"\" },\n        peg$c116 = \"[\",\n        peg$c117 = { type: \"literal\", value: \"[\", description: \"\\\"[\\\"\" },\n        peg$c118 = \"]\",\n        peg$c119 = { type: \"literal\", value: \"]\", description: \"\\\"]\\\"\" },\n        peg$c120 = \"\\n\",\n        peg$c121 = { type: \"literal\", value: \"\\n\", description: \"\\\"\\\\n\\\"\" },\n        peg$c122 = \"\\r\\n\",\n        peg$c123 = { type: \"literal\", value: \"\\r\\n\", description: \"\\\"\\\\r\\\\n\\\"\" },\n        peg$c124 = \"\\r\",\n        peg$c125 = { type: \"literal\", value: \"\\r\", description: \"\\\"\\\\r\\\"\" },\n        peg$c126 = \"\\u2028\",\n        peg$c127 = { type: \"literal\", value: \"\\u2028\", description: \"\\\"\\\\u2028\\\"\" },\n        peg$c128 = \"\\u2029\",\n        peg$c129 = { type: \"literal\", value: \"\\u2029\", description: \"\\\"\\\\u2029\\\"\" },\n        peg$c130 = /^[\\t\\x0B\\f \\xA0\\uFEFF]/,\n        peg$c131 = { type: \"class\", value: \"[\\\\t\\\\x0B\\\\f \\\\xA0\\\\uFEFF]\", description: \"[\\\\t\\\\x0B\\\\f \\\\xA0\\\\uFEFF]\" },\n\n        peg$currPos          = 0,\n        peg$reportedPos      = 0,\n        peg$cachedPos        = 0,\n        peg$cachedPosDetails = { line: 1, column: 1, seenCR: false },\n        peg$maxFailPos       = 0,\n        peg$maxFailExpected  = [],\n        peg$silentFails      = 0,\n\n        peg$result;\n\n    if (\"startRule\" in options) {\n      if (!(options.startRule in peg$startRuleFunctions)) {\n        throw new Error(\"Can't start parsing from rule \\\"\" + options.startRule + \"\\\".\");\n      }\n\n      peg$startRuleFunction = peg$startRuleFunctions[options.startRule];\n    }\n\n    function text() {\n      return input.substring(peg$reportedPos, peg$currPos);\n    }\n\n    function offset() {\n      return peg$reportedPos;\n    }\n\n    function line() {\n      return peg$computePosDetails(peg$reportedPos).line;\n    }\n\n    function column() {\n      return peg$computePosDetails(peg$reportedPos).column;\n    }\n\n    function expected(description) {\n      throw peg$buildException(\n        null,\n        [{ type: \"other\", description: description }],\n        peg$reportedPos\n      );\n    }\n\n    function error(message) {\n      throw peg$buildException(message, null, peg$reportedPos);\n    }\n\n    function peg$computePosDetails(pos) {\n      function advance(details, startPos, endPos) {\n        var p, ch;\n\n        for (p = startPos; p < endPos; p++) {\n          ch = input.charAt(p);\n          if (ch === \"\\n\") {\n            if (!details.seenCR) { details.line++; }\n            details.column = 1;\n            details.seenCR = false;\n          } else if (ch === \"\\r\" || ch === \"\\u2028\" || ch === \"\\u2029\") {\n            details.line++;\n            details.column = 1;\n            details.seenCR = true;\n          } else {\n            details.column++;\n            details.seenCR = false;\n          }\n        }\n      }\n\n      if (peg$cachedPos !== pos) {\n        if (peg$cachedPos > pos) {\n          peg$cachedPos = 0;\n          peg$cachedPosDetails = { line: 1, column: 1, seenCR: false };\n        }\n        advance(peg$cachedPosDetails, peg$cachedPos, pos);\n        peg$cachedPos = pos;\n      }\n\n      return peg$cachedPosDetails;\n    }\n\n    function peg$fail(expected) {\n      if (peg$currPos < peg$maxFailPos) { return; }\n\n      if (peg$currPos > peg$maxFailPos) {\n        peg$maxFailPos = peg$currPos;\n        peg$maxFailExpected = [];\n      }\n\n      peg$maxFailExpected.push(expected);\n    }\n\n    function peg$buildException(message, expected, pos) {\n      function cleanupExpected(expected) {\n        var i = 1;\n\n        expected.sort(function(a, b) {\n          if (a.description < b.description) {\n            return -1;\n          } else if (a.description > b.description) {\n            return 1;\n          } else {\n            return 0;\n          }\n        });\n\n        while (i < expected.length) {\n          if (expected[i - 1] === expected[i]) {\n            expected.splice(i, 1);\n          } else {\n            i++;\n          }\n        }\n      }\n\n      function buildMessage(expected, found) {\n        function stringEscape(s) {\n          function hex(ch) { return ch.charCodeAt(0).toString(16).toUpperCase(); }\n\n          return s\n            .replace(/\\\\/g,   '\\\\\\\\')\n            .replace(/\"/g,    '\\\\\"')\n            .replace(/\\x08/g, '\\\\b')\n            .replace(/\\t/g,   '\\\\t')\n            .replace(/\\n/g,   '\\\\n')\n            .replace(/\\f/g,   '\\\\f')\n            .replace(/\\r/g,   '\\\\r')\n            .replace(/[\\x00-\\x07\\x0B\\x0E\\x0F]/g, function(ch) { return '\\\\x0' + hex(ch); })\n            .replace(/[\\x10-\\x1F\\x80-\\xFF]/g,    function(ch) { return '\\\\x'  + hex(ch); })\n            .replace(/[\\u0180-\\u0FFF]/g,         function(ch) { return '\\\\u0' + hex(ch); })\n            .replace(/[\\u1080-\\uFFFF]/g,         function(ch) { return '\\\\u'  + hex(ch); });\n        }\n\n        var expectedDescs = new Array(expected.length),\n            expectedDesc, foundDesc, i;\n\n        for (i = 0; i < expected.length; i++) {\n          expectedDescs[i] = expected[i].description;\n        }\n\n        expectedDesc = expected.length > 1\n          ? expectedDescs.slice(0, -1).join(\", \")\n              + \" or \"\n              + expectedDescs[expected.length - 1]\n          : expectedDescs[0];\n\n        foundDesc = found ? \"\\\"\" + stringEscape(found) + \"\\\"\" : \"end of input\";\n\n        return \"Expected \" + expectedDesc + \" but \" + foundDesc + \" found.\";\n      }\n\n      var posDetails = peg$computePosDetails(pos),\n          found      = pos < input.length ? input.charAt(pos) : null;\n\n      if (expected !== null) {\n        cleanupExpected(expected);\n      }\n\n      return new SyntaxError(\n        message !== null ? message : buildMessage(expected, found),\n        expected,\n        found,\n        pos,\n        posDetails.line,\n        posDetails.column\n      );\n    }\n\n    function peg$parsestart() {\n      var s0;\n\n      s0 = peg$parsebody();\n\n      return s0;\n    }\n\n    function peg$parsebody() {\n      var s0, s1, s2;\n\n      s0 = peg$currPos;\n      s1 = [];\n      s2 = peg$parsepart();\n      while (s2 !== peg$FAILED) {\n        s1.push(s2);\n        s2 = peg$parsepart();\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c1(s1);\n      }\n      s0 = s1;\n\n      return s0;\n    }\n\n    function peg$parsepart() {\n      var s0;\n\n      s0 = peg$parseraw();\n      if (s0 === peg$FAILED) {\n        s0 = peg$parsecomment();\n        if (s0 === peg$FAILED) {\n          s0 = peg$parsesection();\n          if (s0 === peg$FAILED) {\n            s0 = peg$parsepartial();\n            if (s0 === peg$FAILED) {\n              s0 = peg$parsespecial();\n              if (s0 === peg$FAILED) {\n                s0 = peg$parsereference();\n                if (s0 === peg$FAILED) {\n                  s0 = peg$parsebuffer();\n                }\n              }\n            }\n          }\n        }\n      }\n\n      return s0;\n    }\n\n    function peg$parsesection() {\n      var s0, s1, s2, s3, s4, s5, s6, s7;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parsesec_tag_start();\n      if (s1 !== peg$FAILED) {\n        s2 = [];\n        s3 = peg$parsews();\n        while (s3 !== peg$FAILED) {\n          s2.push(s3);\n          s3 = peg$parsews();\n        }\n        if (s2 !== peg$FAILED) {\n          s3 = peg$parserd();\n          if (s3 !== peg$FAILED) {\n            s4 = peg$parsebody();\n            if (s4 !== peg$FAILED) {\n              s5 = peg$parsebodies();\n              if (s5 !== peg$FAILED) {\n                s6 = peg$parseend_tag();\n                if (s6 === peg$FAILED) {\n                  s6 = peg$c4;\n                }\n                if (s6 !== peg$FAILED) {\n                  peg$reportedPos = peg$currPos;\n                  s7 = peg$c5(s1, s4, s5, s6);\n                  if (s7) {\n                    s7 = peg$c6;\n                  } else {\n                    s7 = peg$c3;\n                  }\n                  if (s7 !== peg$FAILED) {\n                    peg$reportedPos = s0;\n                    s1 = peg$c7(s1, s4, s5, s6);\n                    s0 = s1;\n                  } else {\n                    peg$currPos = s0;\n                    s0 = peg$c3;\n                  }\n                } else {\n                  peg$currPos = s0;\n                  s0 = peg$c3;\n                }\n              } else {\n                peg$currPos = s0;\n                s0 = peg$c3;\n              }\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      if (s0 === peg$FAILED) {\n        s0 = peg$currPos;\n        s1 = peg$parsesec_tag_start();\n        if (s1 !== peg$FAILED) {\n          s2 = [];\n          s3 = peg$parsews();\n          while (s3 !== peg$FAILED) {\n            s2.push(s3);\n            s3 = peg$parsews();\n          }\n          if (s2 !== peg$FAILED) {\n            if (input.charCodeAt(peg$currPos) === 47) {\n              s3 = peg$c8;\n              peg$currPos++;\n            } else {\n              s3 = peg$FAILED;\n              if (peg$silentFails === 0) { peg$fail(peg$c9); }\n            }\n            if (s3 !== peg$FAILED) {\n              s4 = peg$parserd();\n              if (s4 !== peg$FAILED) {\n                peg$reportedPos = s0;\n                s1 = peg$c10(s1);\n                s0 = s1;\n              } else {\n                peg$currPos = s0;\n                s0 = peg$c3;\n              }\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c2); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsesec_tag_start() {\n      var s0, s1, s2, s3, s4, s5, s6;\n\n      s0 = peg$currPos;\n      s1 = peg$parseld();\n      if (s1 !== peg$FAILED) {\n        if (peg$c11.test(input.charAt(peg$currPos))) {\n          s2 = input.charAt(peg$currPos);\n          peg$currPos++;\n        } else {\n          s2 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c12); }\n        }\n        if (s2 !== peg$FAILED) {\n          s3 = [];\n          s4 = peg$parsews();\n          while (s4 !== peg$FAILED) {\n            s3.push(s4);\n            s4 = peg$parsews();\n          }\n          if (s3 !== peg$FAILED) {\n            s4 = peg$parseidentifier();\n            if (s4 !== peg$FAILED) {\n              s5 = peg$parsecontext();\n              if (s5 !== peg$FAILED) {\n                s6 = peg$parseparams();\n                if (s6 !== peg$FAILED) {\n                  peg$reportedPos = s0;\n                  s1 = peg$c13(s2, s4, s5, s6);\n                  s0 = s1;\n                } else {\n                  peg$currPos = s0;\n                  s0 = peg$c3;\n                }\n              } else {\n                peg$currPos = s0;\n                s0 = peg$c3;\n              }\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n\n      return s0;\n    }\n\n    function peg$parseend_tag() {\n      var s0, s1, s2, s3, s4, s5, s6;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parseld();\n      if (s1 !== peg$FAILED) {\n        if (input.charCodeAt(peg$currPos) === 47) {\n          s2 = peg$c8;\n          peg$currPos++;\n        } else {\n          s2 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c9); }\n        }\n        if (s2 !== peg$FAILED) {\n          s3 = [];\n          s4 = peg$parsews();\n          while (s4 !== peg$FAILED) {\n            s3.push(s4);\n            s4 = peg$parsews();\n          }\n          if (s3 !== peg$FAILED) {\n            s4 = peg$parseidentifier();\n            if (s4 !== peg$FAILED) {\n              s5 = [];\n              s6 = peg$parsews();\n              while (s6 !== peg$FAILED) {\n                s5.push(s6);\n                s6 = peg$parsews();\n              }\n              if (s5 !== peg$FAILED) {\n                s6 = peg$parserd();\n                if (s6 !== peg$FAILED) {\n                  peg$reportedPos = s0;\n                  s1 = peg$c15(s4);\n                  s0 = s1;\n                } else {\n                  peg$currPos = s0;\n                  s0 = peg$c3;\n                }\n              } else {\n                peg$currPos = s0;\n                s0 = peg$c3;\n              }\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c14); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsecontext() {\n      var s0, s1, s2, s3;\n\n      s0 = peg$currPos;\n      s1 = peg$currPos;\n      if (input.charCodeAt(peg$currPos) === 58) {\n        s2 = peg$c16;\n        peg$currPos++;\n      } else {\n        s2 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c17); }\n      }\n      if (s2 !== peg$FAILED) {\n        s3 = peg$parseidentifier();\n        if (s3 !== peg$FAILED) {\n          peg$reportedPos = s1;\n          s2 = peg$c18(s3);\n          s1 = s2;\n        } else {\n          peg$currPos = s1;\n          s1 = peg$c3;\n        }\n      } else {\n        peg$currPos = s1;\n        s1 = peg$c3;\n      }\n      if (s1 === peg$FAILED) {\n        s1 = peg$c4;\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c19(s1);\n      }\n      s0 = s1;\n\n      return s0;\n    }\n\n    function peg$parseparams() {\n      var s0, s1, s2, s3, s4, s5, s6;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = [];\n      s2 = peg$currPos;\n      s3 = [];\n      s4 = peg$parsews();\n      if (s4 !== peg$FAILED) {\n        while (s4 !== peg$FAILED) {\n          s3.push(s4);\n          s4 = peg$parsews();\n        }\n      } else {\n        s3 = peg$c3;\n      }\n      if (s3 !== peg$FAILED) {\n        s4 = peg$parsekey();\n        if (s4 !== peg$FAILED) {\n          if (input.charCodeAt(peg$currPos) === 61) {\n            s5 = peg$c21;\n            peg$currPos++;\n          } else {\n            s5 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c22); }\n          }\n          if (s5 !== peg$FAILED) {\n            s6 = peg$parsenumber();\n            if (s6 === peg$FAILED) {\n              s6 = peg$parseidentifier();\n              if (s6 === peg$FAILED) {\n                s6 = peg$parseinline();\n              }\n            }\n            if (s6 !== peg$FAILED) {\n              peg$reportedPos = s2;\n              s3 = peg$c23(s4, s6);\n              s2 = s3;\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      } else {\n        peg$currPos = s2;\n        s2 = peg$c3;\n      }\n      while (s2 !== peg$FAILED) {\n        s1.push(s2);\n        s2 = peg$currPos;\n        s3 = [];\n        s4 = peg$parsews();\n        if (s4 !== peg$FAILED) {\n          while (s4 !== peg$FAILED) {\n            s3.push(s4);\n            s4 = peg$parsews();\n          }\n        } else {\n          s3 = peg$c3;\n        }\n        if (s3 !== peg$FAILED) {\n          s4 = peg$parsekey();\n          if (s4 !== peg$FAILED) {\n            if (input.charCodeAt(peg$currPos) === 61) {\n              s5 = peg$c21;\n              peg$currPos++;\n            } else {\n              s5 = peg$FAILED;\n              if (peg$silentFails === 0) { peg$fail(peg$c22); }\n            }\n            if (s5 !== peg$FAILED) {\n              s6 = peg$parsenumber();\n              if (s6 === peg$FAILED) {\n                s6 = peg$parseidentifier();\n                if (s6 === peg$FAILED) {\n                  s6 = peg$parseinline();\n                }\n              }\n              if (s6 !== peg$FAILED) {\n                peg$reportedPos = s2;\n                s3 = peg$c23(s4, s6);\n                s2 = s3;\n              } else {\n                peg$currPos = s2;\n                s2 = peg$c3;\n              }\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c24(s1);\n      }\n      s0 = s1;\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c20); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsebodies() {\n      var s0, s1, s2, s3, s4, s5, s6, s7;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = [];\n      s2 = peg$currPos;\n      s3 = peg$parseld();\n      if (s3 !== peg$FAILED) {\n        if (input.charCodeAt(peg$currPos) === 58) {\n          s4 = peg$c16;\n          peg$currPos++;\n        } else {\n          s4 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c17); }\n        }\n        if (s4 !== peg$FAILED) {\n          s5 = peg$parsekey();\n          if (s5 !== peg$FAILED) {\n            s6 = peg$parserd();\n            if (s6 !== peg$FAILED) {\n              s7 = peg$parsebody();\n              if (s7 !== peg$FAILED) {\n                peg$reportedPos = s2;\n                s3 = peg$c23(s5, s7);\n                s2 = s3;\n              } else {\n                peg$currPos = s2;\n                s2 = peg$c3;\n              }\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      } else {\n        peg$currPos = s2;\n        s2 = peg$c3;\n      }\n      while (s2 !== peg$FAILED) {\n        s1.push(s2);\n        s2 = peg$currPos;\n        s3 = peg$parseld();\n        if (s3 !== peg$FAILED) {\n          if (input.charCodeAt(peg$currPos) === 58) {\n            s4 = peg$c16;\n            peg$currPos++;\n          } else {\n            s4 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c17); }\n          }\n          if (s4 !== peg$FAILED) {\n            s5 = peg$parsekey();\n            if (s5 !== peg$FAILED) {\n              s6 = peg$parserd();\n              if (s6 !== peg$FAILED) {\n                s7 = peg$parsebody();\n                if (s7 !== peg$FAILED) {\n                  peg$reportedPos = s2;\n                  s3 = peg$c23(s5, s7);\n                  s2 = s3;\n                } else {\n                  peg$currPos = s2;\n                  s2 = peg$c3;\n                }\n              } else {\n                peg$currPos = s2;\n                s2 = peg$c3;\n              }\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c26(s1);\n      }\n      s0 = s1;\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c25); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsereference() {\n      var s0, s1, s2, s3, s4;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parseld();\n      if (s1 !== peg$FAILED) {\n        s2 = peg$parseidentifier();\n        if (s2 !== peg$FAILED) {\n          s3 = peg$parsefilters();\n          if (s3 !== peg$FAILED) {\n            s4 = peg$parserd();\n            if (s4 !== peg$FAILED) {\n              peg$reportedPos = s0;\n              s1 = peg$c28(s2, s3);\n              s0 = s1;\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c27); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsepartial() {\n      var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parseld();\n      if (s1 !== peg$FAILED) {\n        if (input.charCodeAt(peg$currPos) === 62) {\n          s2 = peg$c30;\n          peg$currPos++;\n        } else {\n          s2 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c31); }\n        }\n        if (s2 === peg$FAILED) {\n          if (input.charCodeAt(peg$currPos) === 43) {\n            s2 = peg$c32;\n            peg$currPos++;\n          } else {\n            s2 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c33); }\n          }\n        }\n        if (s2 !== peg$FAILED) {\n          s3 = [];\n          s4 = peg$parsews();\n          while (s4 !== peg$FAILED) {\n            s3.push(s4);\n            s4 = peg$parsews();\n          }\n          if (s3 !== peg$FAILED) {\n            s4 = peg$currPos;\n            s5 = peg$parsekey();\n            if (s5 !== peg$FAILED) {\n              peg$reportedPos = s4;\n              s5 = peg$c34(s5);\n            }\n            s4 = s5;\n            if (s4 === peg$FAILED) {\n              s4 = peg$parseinline();\n            }\n            if (s4 !== peg$FAILED) {\n              s5 = peg$parsecontext();\n              if (s5 !== peg$FAILED) {\n                s6 = peg$parseparams();\n                if (s6 !== peg$FAILED) {\n                  s7 = [];\n                  s8 = peg$parsews();\n                  while (s8 !== peg$FAILED) {\n                    s7.push(s8);\n                    s8 = peg$parsews();\n                  }\n                  if (s7 !== peg$FAILED) {\n                    if (input.charCodeAt(peg$currPos) === 47) {\n                      s8 = peg$c8;\n                      peg$currPos++;\n                    } else {\n                      s8 = peg$FAILED;\n                      if (peg$silentFails === 0) { peg$fail(peg$c9); }\n                    }\n                    if (s8 !== peg$FAILED) {\n                      s9 = peg$parserd();\n                      if (s9 !== peg$FAILED) {\n                        peg$reportedPos = s0;\n                        s1 = peg$c35(s2, s4, s5, s6);\n                        s0 = s1;\n                      } else {\n                        peg$currPos = s0;\n                        s0 = peg$c3;\n                      }\n                    } else {\n                      peg$currPos = s0;\n                      s0 = peg$c3;\n                    }\n                  } else {\n                    peg$currPos = s0;\n                    s0 = peg$c3;\n                  }\n                } else {\n                  peg$currPos = s0;\n                  s0 = peg$c3;\n                }\n              } else {\n                peg$currPos = s0;\n                s0 = peg$c3;\n              }\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c29); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsefilters() {\n      var s0, s1, s2, s3, s4;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = [];\n      s2 = peg$currPos;\n      if (input.charCodeAt(peg$currPos) === 124) {\n        s3 = peg$c37;\n        peg$currPos++;\n      } else {\n        s3 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c38); }\n      }\n      if (s3 !== peg$FAILED) {\n        s4 = peg$parsekey();\n        if (s4 !== peg$FAILED) {\n          peg$reportedPos = s2;\n          s3 = peg$c18(s4);\n          s2 = s3;\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      } else {\n        peg$currPos = s2;\n        s2 = peg$c3;\n      }\n      while (s2 !== peg$FAILED) {\n        s1.push(s2);\n        s2 = peg$currPos;\n        if (input.charCodeAt(peg$currPos) === 124) {\n          s3 = peg$c37;\n          peg$currPos++;\n        } else {\n          s3 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c38); }\n        }\n        if (s3 !== peg$FAILED) {\n          s4 = peg$parsekey();\n          if (s4 !== peg$FAILED) {\n            peg$reportedPos = s2;\n            s3 = peg$c18(s4);\n            s2 = s3;\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c39(s1);\n      }\n      s0 = s1;\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c36); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsespecial() {\n      var s0, s1, s2, s3, s4;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parseld();\n      if (s1 !== peg$FAILED) {\n        if (input.charCodeAt(peg$currPos) === 126) {\n          s2 = peg$c41;\n          peg$currPos++;\n        } else {\n          s2 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c42); }\n        }\n        if (s2 !== peg$FAILED) {\n          s3 = peg$parsekey();\n          if (s3 !== peg$FAILED) {\n            s4 = peg$parserd();\n            if (s4 !== peg$FAILED) {\n              peg$reportedPos = s0;\n              s1 = peg$c43(s3);\n              s0 = s1;\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c40); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseidentifier() {\n      var s0, s1;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parsepath();\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c45(s1);\n      }\n      s0 = s1;\n      if (s0 === peg$FAILED) {\n        s0 = peg$currPos;\n        s1 = peg$parsekey();\n        if (s1 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c46(s1);\n        }\n        s0 = s1;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c44); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsenumber() {\n      var s0, s1;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parsefloat();\n      if (s1 === peg$FAILED) {\n        s1 = peg$parseinteger();\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c48(s1);\n      }\n      s0 = s1;\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c47); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsefloat() {\n      var s0, s1, s2, s3;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parseinteger();\n      if (s1 !== peg$FAILED) {\n        if (input.charCodeAt(peg$currPos) === 46) {\n          s2 = peg$c50;\n          peg$currPos++;\n        } else {\n          s2 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c51); }\n        }\n        if (s2 !== peg$FAILED) {\n          s3 = peg$parseunsigned_integer();\n          if (s3 !== peg$FAILED) {\n            peg$reportedPos = s0;\n            s1 = peg$c52(s1, s3);\n            s0 = s1;\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c49); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseunsigned_integer() {\n      var s0, s1, s2;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = [];\n      if (peg$c54.test(input.charAt(peg$currPos))) {\n        s2 = input.charAt(peg$currPos);\n        peg$currPos++;\n      } else {\n        s2 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c55); }\n      }\n      if (s2 !== peg$FAILED) {\n        while (s2 !== peg$FAILED) {\n          s1.push(s2);\n          if (peg$c54.test(input.charAt(peg$currPos))) {\n            s2 = input.charAt(peg$currPos);\n            peg$currPos++;\n          } else {\n            s2 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c55); }\n          }\n        }\n      } else {\n        s1 = peg$c3;\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c56(s1);\n      }\n      s0 = s1;\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c53); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsesigned_integer() {\n      var s0, s1, s2;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      if (input.charCodeAt(peg$currPos) === 45) {\n        s1 = peg$c58;\n        peg$currPos++;\n      } else {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c59); }\n      }\n      if (s1 !== peg$FAILED) {\n        s2 = peg$parseunsigned_integer();\n        if (s2 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c60(s1, s2);\n          s0 = s1;\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c57); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseinteger() {\n      var s0, s1;\n\n      peg$silentFails++;\n      s0 = peg$parsesigned_integer();\n      if (s0 === peg$FAILED) {\n        s0 = peg$parseunsigned_integer();\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c61); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsepath() {\n      var s0, s1, s2, s3;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parsekey();\n      if (s1 === peg$FAILED) {\n        s1 = peg$c4;\n      }\n      if (s1 !== peg$FAILED) {\n        s2 = [];\n        s3 = peg$parsearray_part();\n        if (s3 === peg$FAILED) {\n          s3 = peg$parsearray();\n        }\n        if (s3 !== peg$FAILED) {\n          while (s3 !== peg$FAILED) {\n            s2.push(s3);\n            s3 = peg$parsearray_part();\n            if (s3 === peg$FAILED) {\n              s3 = peg$parsearray();\n            }\n          }\n        } else {\n          s2 = peg$c3;\n        }\n        if (s2 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c63(s1, s2);\n          s0 = s1;\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      if (s0 === peg$FAILED) {\n        s0 = peg$currPos;\n        if (input.charCodeAt(peg$currPos) === 46) {\n          s1 = peg$c50;\n          peg$currPos++;\n        } else {\n          s1 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c51); }\n        }\n        if (s1 !== peg$FAILED) {\n          s2 = [];\n          s3 = peg$parsearray_part();\n          if (s3 === peg$FAILED) {\n            s3 = peg$parsearray();\n          }\n          while (s3 !== peg$FAILED) {\n            s2.push(s3);\n            s3 = peg$parsearray_part();\n            if (s3 === peg$FAILED) {\n              s3 = peg$parsearray();\n            }\n          }\n          if (s2 !== peg$FAILED) {\n            peg$reportedPos = s0;\n            s1 = peg$c64(s2);\n            s0 = s1;\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c62); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsekey() {\n      var s0, s1, s2, s3;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      if (peg$c66.test(input.charAt(peg$currPos))) {\n        s1 = input.charAt(peg$currPos);\n        peg$currPos++;\n      } else {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c67); }\n      }\n      if (s1 !== peg$FAILED) {\n        s2 = [];\n        if (peg$c68.test(input.charAt(peg$currPos))) {\n          s3 = input.charAt(peg$currPos);\n          peg$currPos++;\n        } else {\n          s3 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c69); }\n        }\n        while (s3 !== peg$FAILED) {\n          s2.push(s3);\n          if (peg$c68.test(input.charAt(peg$currPos))) {\n            s3 = input.charAt(peg$currPos);\n            peg$currPos++;\n          } else {\n            s3 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c69); }\n          }\n        }\n        if (s2 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c70(s1, s2);\n          s0 = s1;\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c65); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsearray() {\n      var s0, s1, s2, s3, s4, s5;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$currPos;\n      s2 = peg$parselb();\n      if (s2 !== peg$FAILED) {\n        s3 = peg$currPos;\n        s4 = [];\n        if (peg$c54.test(input.charAt(peg$currPos))) {\n          s5 = input.charAt(peg$currPos);\n          peg$currPos++;\n        } else {\n          s5 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c55); }\n        }\n        if (s5 !== peg$FAILED) {\n          while (s5 !== peg$FAILED) {\n            s4.push(s5);\n            if (peg$c54.test(input.charAt(peg$currPos))) {\n              s5 = input.charAt(peg$currPos);\n              peg$currPos++;\n            } else {\n              s5 = peg$FAILED;\n              if (peg$silentFails === 0) { peg$fail(peg$c55); }\n            }\n          }\n        } else {\n          s4 = peg$c3;\n        }\n        if (s4 !== peg$FAILED) {\n          peg$reportedPos = s3;\n          s4 = peg$c72(s4);\n        }\n        s3 = s4;\n        if (s3 === peg$FAILED) {\n          s3 = peg$parseidentifier();\n        }\n        if (s3 !== peg$FAILED) {\n          s4 = peg$parserb();\n          if (s4 !== peg$FAILED) {\n            peg$reportedPos = s1;\n            s2 = peg$c73(s3);\n            s1 = s2;\n          } else {\n            peg$currPos = s1;\n            s1 = peg$c3;\n          }\n        } else {\n          peg$currPos = s1;\n          s1 = peg$c3;\n        }\n      } else {\n        peg$currPos = s1;\n        s1 = peg$c3;\n      }\n      if (s1 !== peg$FAILED) {\n        s2 = peg$parsearray_part();\n        if (s2 === peg$FAILED) {\n          s2 = peg$c4;\n        }\n        if (s2 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c74(s1, s2);\n          s0 = s1;\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c71); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsearray_part() {\n      var s0, s1, s2, s3, s4;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = [];\n      s2 = peg$currPos;\n      if (input.charCodeAt(peg$currPos) === 46) {\n        s3 = peg$c50;\n        peg$currPos++;\n      } else {\n        s3 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c51); }\n      }\n      if (s3 !== peg$FAILED) {\n        s4 = peg$parsekey();\n        if (s4 !== peg$FAILED) {\n          peg$reportedPos = s2;\n          s3 = peg$c76(s4);\n          s2 = s3;\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      } else {\n        peg$currPos = s2;\n        s2 = peg$c3;\n      }\n      if (s2 !== peg$FAILED) {\n        while (s2 !== peg$FAILED) {\n          s1.push(s2);\n          s2 = peg$currPos;\n          if (input.charCodeAt(peg$currPos) === 46) {\n            s3 = peg$c50;\n            peg$currPos++;\n          } else {\n            s3 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c51); }\n          }\n          if (s3 !== peg$FAILED) {\n            s4 = peg$parsekey();\n            if (s4 !== peg$FAILED) {\n              peg$reportedPos = s2;\n              s3 = peg$c76(s4);\n              s2 = s3;\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        }\n      } else {\n        s1 = peg$c3;\n      }\n      if (s1 !== peg$FAILED) {\n        s2 = peg$parsearray();\n        if (s2 === peg$FAILED) {\n          s2 = peg$c4;\n        }\n        if (s2 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c77(s1, s2);\n          s0 = s1;\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c75); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseinline() {\n      var s0, s1, s2, s3;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      if (input.charCodeAt(peg$currPos) === 34) {\n        s1 = peg$c79;\n        peg$currPos++;\n      } else {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c80); }\n      }\n      if (s1 !== peg$FAILED) {\n        if (input.charCodeAt(peg$currPos) === 34) {\n          s2 = peg$c79;\n          peg$currPos++;\n        } else {\n          s2 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c80); }\n        }\n        if (s2 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c81();\n          s0 = s1;\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      if (s0 === peg$FAILED) {\n        s0 = peg$currPos;\n        if (input.charCodeAt(peg$currPos) === 34) {\n          s1 = peg$c79;\n          peg$currPos++;\n        } else {\n          s1 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c80); }\n        }\n        if (s1 !== peg$FAILED) {\n          s2 = peg$parseliteral();\n          if (s2 !== peg$FAILED) {\n            if (input.charCodeAt(peg$currPos) === 34) {\n              s3 = peg$c79;\n              peg$currPos++;\n            } else {\n              s3 = peg$FAILED;\n              if (peg$silentFails === 0) { peg$fail(peg$c80); }\n            }\n            if (s3 !== peg$FAILED) {\n              peg$reportedPos = s0;\n              s1 = peg$c82(s2);\n              s0 = s1;\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n        if (s0 === peg$FAILED) {\n          s0 = peg$currPos;\n          if (input.charCodeAt(peg$currPos) === 34) {\n            s1 = peg$c79;\n            peg$currPos++;\n          } else {\n            s1 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c80); }\n          }\n          if (s1 !== peg$FAILED) {\n            s2 = [];\n            s3 = peg$parseinline_part();\n            if (s3 !== peg$FAILED) {\n              while (s3 !== peg$FAILED) {\n                s2.push(s3);\n                s3 = peg$parseinline_part();\n              }\n            } else {\n              s2 = peg$c3;\n            }\n            if (s2 !== peg$FAILED) {\n              if (input.charCodeAt(peg$currPos) === 34) {\n                s3 = peg$c79;\n                peg$currPos++;\n              } else {\n                s3 = peg$FAILED;\n                if (peg$silentFails === 0) { peg$fail(peg$c80); }\n              }\n              if (s3 !== peg$FAILED) {\n                peg$reportedPos = s0;\n                s1 = peg$c83(s2);\n                s0 = s1;\n              } else {\n                peg$currPos = s0;\n                s0 = peg$c3;\n              }\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        }\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c78); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseinline_part() {\n      var s0, s1;\n\n      s0 = peg$parsespecial();\n      if (s0 === peg$FAILED) {\n        s0 = peg$parsereference();\n        if (s0 === peg$FAILED) {\n          s0 = peg$currPos;\n          s1 = peg$parseliteral();\n          if (s1 !== peg$FAILED) {\n            peg$reportedPos = s0;\n            s1 = peg$c84(s1);\n          }\n          s0 = s1;\n        }\n      }\n\n      return s0;\n    }\n\n    function peg$parsebuffer() {\n      var s0, s1, s2, s3, s4, s5, s6, s7;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = peg$parseeol();\n      if (s1 !== peg$FAILED) {\n        s2 = [];\n        s3 = peg$parsews();\n        while (s3 !== peg$FAILED) {\n          s2.push(s3);\n          s3 = peg$parsews();\n        }\n        if (s2 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c86(s1, s2);\n          s0 = s1;\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      if (s0 === peg$FAILED) {\n        s0 = peg$currPos;\n        s1 = [];\n        s2 = peg$currPos;\n        s3 = peg$currPos;\n        peg$silentFails++;\n        s4 = peg$parsetag();\n        peg$silentFails--;\n        if (s4 === peg$FAILED) {\n          s3 = peg$c6;\n        } else {\n          peg$currPos = s3;\n          s3 = peg$c3;\n        }\n        if (s3 !== peg$FAILED) {\n          s4 = peg$currPos;\n          peg$silentFails++;\n          s5 = peg$parseraw();\n          peg$silentFails--;\n          if (s5 === peg$FAILED) {\n            s4 = peg$c6;\n          } else {\n            peg$currPos = s4;\n            s4 = peg$c3;\n          }\n          if (s4 !== peg$FAILED) {\n            s5 = peg$currPos;\n            peg$silentFails++;\n            s6 = peg$parsecomment();\n            peg$silentFails--;\n            if (s6 === peg$FAILED) {\n              s5 = peg$c6;\n            } else {\n              peg$currPos = s5;\n              s5 = peg$c3;\n            }\n            if (s5 !== peg$FAILED) {\n              s6 = peg$currPos;\n              peg$silentFails++;\n              s7 = peg$parseeol();\n              peg$silentFails--;\n              if (s7 === peg$FAILED) {\n                s6 = peg$c6;\n              } else {\n                peg$currPos = s6;\n                s6 = peg$c3;\n              }\n              if (s6 !== peg$FAILED) {\n                if (input.length > peg$currPos) {\n                  s7 = input.charAt(peg$currPos);\n                  peg$currPos++;\n                } else {\n                  s7 = peg$FAILED;\n                  if (peg$silentFails === 0) { peg$fail(peg$c87); }\n                }\n                if (s7 !== peg$FAILED) {\n                  peg$reportedPos = s2;\n                  s3 = peg$c88(s7);\n                  s2 = s3;\n                } else {\n                  peg$currPos = s2;\n                  s2 = peg$c3;\n                }\n              } else {\n                peg$currPos = s2;\n                s2 = peg$c3;\n              }\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n        if (s2 !== peg$FAILED) {\n          while (s2 !== peg$FAILED) {\n            s1.push(s2);\n            s2 = peg$currPos;\n            s3 = peg$currPos;\n            peg$silentFails++;\n            s4 = peg$parsetag();\n            peg$silentFails--;\n            if (s4 === peg$FAILED) {\n              s3 = peg$c6;\n            } else {\n              peg$currPos = s3;\n              s3 = peg$c3;\n            }\n            if (s3 !== peg$FAILED) {\n              s4 = peg$currPos;\n              peg$silentFails++;\n              s5 = peg$parseraw();\n              peg$silentFails--;\n              if (s5 === peg$FAILED) {\n                s4 = peg$c6;\n              } else {\n                peg$currPos = s4;\n                s4 = peg$c3;\n              }\n              if (s4 !== peg$FAILED) {\n                s5 = peg$currPos;\n                peg$silentFails++;\n                s6 = peg$parsecomment();\n                peg$silentFails--;\n                if (s6 === peg$FAILED) {\n                  s5 = peg$c6;\n                } else {\n                  peg$currPos = s5;\n                  s5 = peg$c3;\n                }\n                if (s5 !== peg$FAILED) {\n                  s6 = peg$currPos;\n                  peg$silentFails++;\n                  s7 = peg$parseeol();\n                  peg$silentFails--;\n                  if (s7 === peg$FAILED) {\n                    s6 = peg$c6;\n                  } else {\n                    peg$currPos = s6;\n                    s6 = peg$c3;\n                  }\n                  if (s6 !== peg$FAILED) {\n                    if (input.length > peg$currPos) {\n                      s7 = input.charAt(peg$currPos);\n                      peg$currPos++;\n                    } else {\n                      s7 = peg$FAILED;\n                      if (peg$silentFails === 0) { peg$fail(peg$c87); }\n                    }\n                    if (s7 !== peg$FAILED) {\n                      peg$reportedPos = s2;\n                      s3 = peg$c88(s7);\n                      s2 = s3;\n                    } else {\n                      peg$currPos = s2;\n                      s2 = peg$c3;\n                    }\n                  } else {\n                    peg$currPos = s2;\n                    s2 = peg$c3;\n                  }\n                } else {\n                  peg$currPos = s2;\n                  s2 = peg$c3;\n                }\n              } else {\n                peg$currPos = s2;\n                s2 = peg$c3;\n              }\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          }\n        } else {\n          s1 = peg$c3;\n        }\n        if (s1 !== peg$FAILED) {\n          peg$reportedPos = s0;\n          s1 = peg$c89(s1);\n        }\n        s0 = s1;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c85); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseliteral() {\n      var s0, s1, s2, s3, s4;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      s1 = [];\n      s2 = peg$currPos;\n      s3 = peg$currPos;\n      peg$silentFails++;\n      s4 = peg$parsetag();\n      peg$silentFails--;\n      if (s4 === peg$FAILED) {\n        s3 = peg$c6;\n      } else {\n        peg$currPos = s3;\n        s3 = peg$c3;\n      }\n      if (s3 !== peg$FAILED) {\n        s4 = peg$parseesc();\n        if (s4 === peg$FAILED) {\n          if (peg$c91.test(input.charAt(peg$currPos))) {\n            s4 = input.charAt(peg$currPos);\n            peg$currPos++;\n          } else {\n            s4 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c92); }\n          }\n        }\n        if (s4 !== peg$FAILED) {\n          peg$reportedPos = s2;\n          s3 = peg$c88(s4);\n          s2 = s3;\n        } else {\n          peg$currPos = s2;\n          s2 = peg$c3;\n        }\n      } else {\n        peg$currPos = s2;\n        s2 = peg$c3;\n      }\n      if (s2 !== peg$FAILED) {\n        while (s2 !== peg$FAILED) {\n          s1.push(s2);\n          s2 = peg$currPos;\n          s3 = peg$currPos;\n          peg$silentFails++;\n          s4 = peg$parsetag();\n          peg$silentFails--;\n          if (s4 === peg$FAILED) {\n            s3 = peg$c6;\n          } else {\n            peg$currPos = s3;\n            s3 = peg$c3;\n          }\n          if (s3 !== peg$FAILED) {\n            s4 = peg$parseesc();\n            if (s4 === peg$FAILED) {\n              if (peg$c91.test(input.charAt(peg$currPos))) {\n                s4 = input.charAt(peg$currPos);\n                peg$currPos++;\n              } else {\n                s4 = peg$FAILED;\n                if (peg$silentFails === 0) { peg$fail(peg$c92); }\n              }\n            }\n            if (s4 !== peg$FAILED) {\n              peg$reportedPos = s2;\n              s3 = peg$c88(s4);\n              s2 = s3;\n            } else {\n              peg$currPos = s2;\n              s2 = peg$c3;\n            }\n          } else {\n            peg$currPos = s2;\n            s2 = peg$c3;\n          }\n        }\n      } else {\n        s1 = peg$c3;\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c93(s1);\n      }\n      s0 = s1;\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c90); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseesc() {\n      var s0, s1;\n\n      s0 = peg$currPos;\n      if (input.substr(peg$currPos, 2) === peg$c94) {\n        s1 = peg$c94;\n        peg$currPos += 2;\n      } else {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c95); }\n      }\n      if (s1 !== peg$FAILED) {\n        peg$reportedPos = s0;\n        s1 = peg$c96();\n      }\n      s0 = s1;\n\n      return s0;\n    }\n\n    function peg$parseraw() {\n      var s0, s1, s2, s3, s4, s5;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      if (input.substr(peg$currPos, 2) === peg$c98) {\n        s1 = peg$c98;\n        peg$currPos += 2;\n      } else {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c99); }\n      }\n      if (s1 !== peg$FAILED) {\n        s2 = [];\n        s3 = peg$currPos;\n        s4 = peg$currPos;\n        peg$silentFails++;\n        if (input.substr(peg$currPos, 2) === peg$c100) {\n          s5 = peg$c100;\n          peg$currPos += 2;\n        } else {\n          s5 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c101); }\n        }\n        peg$silentFails--;\n        if (s5 === peg$FAILED) {\n          s4 = peg$c6;\n        } else {\n          peg$currPos = s4;\n          s4 = peg$c3;\n        }\n        if (s4 !== peg$FAILED) {\n          if (input.length > peg$currPos) {\n            s5 = input.charAt(peg$currPos);\n            peg$currPos++;\n          } else {\n            s5 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c87); }\n          }\n          if (s5 !== peg$FAILED) {\n            peg$reportedPos = s3;\n            s4 = peg$c102(s5);\n            s3 = s4;\n          } else {\n            peg$currPos = s3;\n            s3 = peg$c3;\n          }\n        } else {\n          peg$currPos = s3;\n          s3 = peg$c3;\n        }\n        while (s3 !== peg$FAILED) {\n          s2.push(s3);\n          s3 = peg$currPos;\n          s4 = peg$currPos;\n          peg$silentFails++;\n          if (input.substr(peg$currPos, 2) === peg$c100) {\n            s5 = peg$c100;\n            peg$currPos += 2;\n          } else {\n            s5 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c101); }\n          }\n          peg$silentFails--;\n          if (s5 === peg$FAILED) {\n            s4 = peg$c6;\n          } else {\n            peg$currPos = s4;\n            s4 = peg$c3;\n          }\n          if (s4 !== peg$FAILED) {\n            if (input.length > peg$currPos) {\n              s5 = input.charAt(peg$currPos);\n              peg$currPos++;\n            } else {\n              s5 = peg$FAILED;\n              if (peg$silentFails === 0) { peg$fail(peg$c87); }\n            }\n            if (s5 !== peg$FAILED) {\n              peg$reportedPos = s3;\n              s4 = peg$c102(s5);\n              s3 = s4;\n            } else {\n              peg$currPos = s3;\n              s3 = peg$c3;\n            }\n          } else {\n            peg$currPos = s3;\n            s3 = peg$c3;\n          }\n        }\n        if (s2 !== peg$FAILED) {\n          if (input.substr(peg$currPos, 2) === peg$c100) {\n            s3 = peg$c100;\n            peg$currPos += 2;\n          } else {\n            s3 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c101); }\n          }\n          if (s3 !== peg$FAILED) {\n            peg$reportedPos = s0;\n            s1 = peg$c103(s2);\n            s0 = s1;\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c97); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsecomment() {\n      var s0, s1, s2, s3, s4, s5;\n\n      peg$silentFails++;\n      s0 = peg$currPos;\n      if (input.substr(peg$currPos, 2) === peg$c105) {\n        s1 = peg$c105;\n        peg$currPos += 2;\n      } else {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c106); }\n      }\n      if (s1 !== peg$FAILED) {\n        s2 = [];\n        s3 = peg$currPos;\n        s4 = peg$currPos;\n        peg$silentFails++;\n        if (input.substr(peg$currPos, 2) === peg$c107) {\n          s5 = peg$c107;\n          peg$currPos += 2;\n        } else {\n          s5 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c108); }\n        }\n        peg$silentFails--;\n        if (s5 === peg$FAILED) {\n          s4 = peg$c6;\n        } else {\n          peg$currPos = s4;\n          s4 = peg$c3;\n        }\n        if (s4 !== peg$FAILED) {\n          if (input.length > peg$currPos) {\n            s5 = input.charAt(peg$currPos);\n            peg$currPos++;\n          } else {\n            s5 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c87); }\n          }\n          if (s5 !== peg$FAILED) {\n            peg$reportedPos = s3;\n            s4 = peg$c88(s5);\n            s3 = s4;\n          } else {\n            peg$currPos = s3;\n            s3 = peg$c3;\n          }\n        } else {\n          peg$currPos = s3;\n          s3 = peg$c3;\n        }\n        while (s3 !== peg$FAILED) {\n          s2.push(s3);\n          s3 = peg$currPos;\n          s4 = peg$currPos;\n          peg$silentFails++;\n          if (input.substr(peg$currPos, 2) === peg$c107) {\n            s5 = peg$c107;\n            peg$currPos += 2;\n          } else {\n            s5 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c108); }\n          }\n          peg$silentFails--;\n          if (s5 === peg$FAILED) {\n            s4 = peg$c6;\n          } else {\n            peg$currPos = s4;\n            s4 = peg$c3;\n          }\n          if (s4 !== peg$FAILED) {\n            if (input.length > peg$currPos) {\n              s5 = input.charAt(peg$currPos);\n              peg$currPos++;\n            } else {\n              s5 = peg$FAILED;\n              if (peg$silentFails === 0) { peg$fail(peg$c87); }\n            }\n            if (s5 !== peg$FAILED) {\n              peg$reportedPos = s3;\n              s4 = peg$c88(s5);\n              s3 = s4;\n            } else {\n              peg$currPos = s3;\n              s3 = peg$c3;\n            }\n          } else {\n            peg$currPos = s3;\n            s3 = peg$c3;\n          }\n        }\n        if (s2 !== peg$FAILED) {\n          if (input.substr(peg$currPos, 2) === peg$c107) {\n            s3 = peg$c107;\n            peg$currPos += 2;\n          } else {\n            s3 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c108); }\n          }\n          if (s3 !== peg$FAILED) {\n            peg$reportedPos = s0;\n            s1 = peg$c109(s2);\n            s0 = s1;\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      peg$silentFails--;\n      if (s0 === peg$FAILED) {\n        s1 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c104); }\n      }\n\n      return s0;\n    }\n\n    function peg$parsetag() {\n      var s0, s1, s2, s3, s4, s5, s6, s7, s8, s9;\n\n      s0 = peg$currPos;\n      s1 = peg$parseld();\n      if (s1 !== peg$FAILED) {\n        s2 = [];\n        s3 = peg$parsews();\n        while (s3 !== peg$FAILED) {\n          s2.push(s3);\n          s3 = peg$parsews();\n        }\n        if (s2 !== peg$FAILED) {\n          if (peg$c110.test(input.charAt(peg$currPos))) {\n            s3 = input.charAt(peg$currPos);\n            peg$currPos++;\n          } else {\n            s3 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c111); }\n          }\n          if (s3 !== peg$FAILED) {\n            s4 = [];\n            s5 = peg$parsews();\n            while (s5 !== peg$FAILED) {\n              s4.push(s5);\n              s5 = peg$parsews();\n            }\n            if (s4 !== peg$FAILED) {\n              s5 = [];\n              s6 = peg$currPos;\n              s7 = peg$currPos;\n              peg$silentFails++;\n              s8 = peg$parserd();\n              peg$silentFails--;\n              if (s8 === peg$FAILED) {\n                s7 = peg$c6;\n              } else {\n                peg$currPos = s7;\n                s7 = peg$c3;\n              }\n              if (s7 !== peg$FAILED) {\n                s8 = peg$currPos;\n                peg$silentFails++;\n                s9 = peg$parseeol();\n                peg$silentFails--;\n                if (s9 === peg$FAILED) {\n                  s8 = peg$c6;\n                } else {\n                  peg$currPos = s8;\n                  s8 = peg$c3;\n                }\n                if (s8 !== peg$FAILED) {\n                  if (input.length > peg$currPos) {\n                    s9 = input.charAt(peg$currPos);\n                    peg$currPos++;\n                  } else {\n                    s9 = peg$FAILED;\n                    if (peg$silentFails === 0) { peg$fail(peg$c87); }\n                  }\n                  if (s9 !== peg$FAILED) {\n                    s7 = [s7, s8, s9];\n                    s6 = s7;\n                  } else {\n                    peg$currPos = s6;\n                    s6 = peg$c3;\n                  }\n                } else {\n                  peg$currPos = s6;\n                  s6 = peg$c3;\n                }\n              } else {\n                peg$currPos = s6;\n                s6 = peg$c3;\n              }\n              if (s6 !== peg$FAILED) {\n                while (s6 !== peg$FAILED) {\n                  s5.push(s6);\n                  s6 = peg$currPos;\n                  s7 = peg$currPos;\n                  peg$silentFails++;\n                  s8 = peg$parserd();\n                  peg$silentFails--;\n                  if (s8 === peg$FAILED) {\n                    s7 = peg$c6;\n                  } else {\n                    peg$currPos = s7;\n                    s7 = peg$c3;\n                  }\n                  if (s7 !== peg$FAILED) {\n                    s8 = peg$currPos;\n                    peg$silentFails++;\n                    s9 = peg$parseeol();\n                    peg$silentFails--;\n                    if (s9 === peg$FAILED) {\n                      s8 = peg$c6;\n                    } else {\n                      peg$currPos = s8;\n                      s8 = peg$c3;\n                    }\n                    if (s8 !== peg$FAILED) {\n                      if (input.length > peg$currPos) {\n                        s9 = input.charAt(peg$currPos);\n                        peg$currPos++;\n                      } else {\n                        s9 = peg$FAILED;\n                        if (peg$silentFails === 0) { peg$fail(peg$c87); }\n                      }\n                      if (s9 !== peg$FAILED) {\n                        s7 = [s7, s8, s9];\n                        s6 = s7;\n                      } else {\n                        peg$currPos = s6;\n                        s6 = peg$c3;\n                      }\n                    } else {\n                      peg$currPos = s6;\n                      s6 = peg$c3;\n                    }\n                  } else {\n                    peg$currPos = s6;\n                    s6 = peg$c3;\n                  }\n                }\n              } else {\n                s5 = peg$c3;\n              }\n              if (s5 !== peg$FAILED) {\n                s6 = [];\n                s7 = peg$parsews();\n                while (s7 !== peg$FAILED) {\n                  s6.push(s7);\n                  s7 = peg$parsews();\n                }\n                if (s6 !== peg$FAILED) {\n                  s7 = peg$parserd();\n                  if (s7 !== peg$FAILED) {\n                    s1 = [s1, s2, s3, s4, s5, s6, s7];\n                    s0 = s1;\n                  } else {\n                    peg$currPos = s0;\n                    s0 = peg$c3;\n                  }\n                } else {\n                  peg$currPos = s0;\n                  s0 = peg$c3;\n                }\n              } else {\n                peg$currPos = s0;\n                s0 = peg$c3;\n              }\n            } else {\n              peg$currPos = s0;\n              s0 = peg$c3;\n            }\n          } else {\n            peg$currPos = s0;\n            s0 = peg$c3;\n          }\n        } else {\n          peg$currPos = s0;\n          s0 = peg$c3;\n        }\n      } else {\n        peg$currPos = s0;\n        s0 = peg$c3;\n      }\n      if (s0 === peg$FAILED) {\n        s0 = peg$parsereference();\n      }\n\n      return s0;\n    }\n\n    function peg$parseld() {\n      var s0;\n\n      if (input.charCodeAt(peg$currPos) === 123) {\n        s0 = peg$c112;\n        peg$currPos++;\n      } else {\n        s0 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c113); }\n      }\n\n      return s0;\n    }\n\n    function peg$parserd() {\n      var s0;\n\n      if (input.charCodeAt(peg$currPos) === 125) {\n        s0 = peg$c114;\n        peg$currPos++;\n      } else {\n        s0 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c115); }\n      }\n\n      return s0;\n    }\n\n    function peg$parselb() {\n      var s0;\n\n      if (input.charCodeAt(peg$currPos) === 91) {\n        s0 = peg$c116;\n        peg$currPos++;\n      } else {\n        s0 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c117); }\n      }\n\n      return s0;\n    }\n\n    function peg$parserb() {\n      var s0;\n\n      if (input.charCodeAt(peg$currPos) === 93) {\n        s0 = peg$c118;\n        peg$currPos++;\n      } else {\n        s0 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c119); }\n      }\n\n      return s0;\n    }\n\n    function peg$parseeol() {\n      var s0;\n\n      if (input.charCodeAt(peg$currPos) === 10) {\n        s0 = peg$c120;\n        peg$currPos++;\n      } else {\n        s0 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c121); }\n      }\n      if (s0 === peg$FAILED) {\n        if (input.substr(peg$currPos, 2) === peg$c122) {\n          s0 = peg$c122;\n          peg$currPos += 2;\n        } else {\n          s0 = peg$FAILED;\n          if (peg$silentFails === 0) { peg$fail(peg$c123); }\n        }\n        if (s0 === peg$FAILED) {\n          if (input.charCodeAt(peg$currPos) === 13) {\n            s0 = peg$c124;\n            peg$currPos++;\n          } else {\n            s0 = peg$FAILED;\n            if (peg$silentFails === 0) { peg$fail(peg$c125); }\n          }\n          if (s0 === peg$FAILED) {\n            if (input.charCodeAt(peg$currPos) === 8232) {\n              s0 = peg$c126;\n              peg$currPos++;\n            } else {\n              s0 = peg$FAILED;\n              if (peg$silentFails === 0) { peg$fail(peg$c127); }\n            }\n            if (s0 === peg$FAILED) {\n              if (input.charCodeAt(peg$currPos) === 8233) {\n                s0 = peg$c128;\n                peg$currPos++;\n              } else {\n                s0 = peg$FAILED;\n                if (peg$silentFails === 0) { peg$fail(peg$c129); }\n              }\n            }\n          }\n        }\n      }\n\n      return s0;\n    }\n\n    function peg$parsews() {\n      var s0;\n\n      if (peg$c130.test(input.charAt(peg$currPos))) {\n        s0 = input.charAt(peg$currPos);\n        peg$currPos++;\n      } else {\n        s0 = peg$FAILED;\n        if (peg$silentFails === 0) { peg$fail(peg$c131); }\n      }\n      if (s0 === peg$FAILED) {\n        s0 = peg$parseeol();\n      }\n\n      return s0;\n    }\n\n\n      function makeInteger(arr) {\n        return parseInt(arr.join(''), 10);\n      }\n      function withPosition(arr) {\n        return arr.concat([['line', line()], ['col', column()]]);\n      }\n\n\n    peg$result = peg$startRuleFunction();\n\n    if (peg$result !== peg$FAILED && peg$currPos === input.length) {\n      return peg$result;\n    } else {\n      if (peg$result !== peg$FAILED && peg$currPos < input.length) {\n        peg$fail({ type: \"end\", description: \"end of input\" });\n      }\n\n      throw peg$buildException(null, peg$maxFailExpected, peg$maxFailPos);\n    }\n  }\n\n  return {\n    SyntaxError: SyntaxError,\n    parse:       parse\n  };\n})();\n\n  // expose parser methods\n  dust.parse = parser.parse;\n\n  return parser;\n}));\n\n(function(root, factory) {\n  if (typeof define === \"function\" && define.amd && define.amd.dust === true) {\n    define(\"dust.compile\", [\"dust.core\", \"dust.parse\"], function(dust, parse) {\n      return factory(parse, dust).compile;\n    });\n  } else if (typeof exports === 'object') {\n    // in Node, require this file if we want to use the compiler as a standalone module\n    module.exports = factory(require('./parser').parse, require('./dust'));\n  } else {\n    // in the browser, store the factory output if we want to use the compiler directly\n    factory(root.dust.parse, root.dust);\n  }\n}(this, function(parse, dust) {\n  var compiler = {},\n      isArray = dust.isArray;\n\n\n  compiler.compile = function(source, name) {\n    // the name parameter is optional.\n    // this can happen for templates that are rendered immediately (renderSource which calls compileFn) or\n    // for templates that are compiled as a callable (compileFn)\n    //\n    // for the common case (using compile and render) a name is required so that templates will be cached by name and rendered later, by name.\n\n    try {\n      var ast = filterAST(parse(source));\n      return compile(ast, name);\n    }\n    catch (err)\n    {\n      if (!err.line || !err.column) {\n        throw err;\n      }\n      throw new SyntaxError(err.message + ' At line : ' + err.line + ', column : ' + err.column);\n    }\n  };\n\n  function filterAST(ast) {\n    var context = {};\n    return compiler.filterNode(context, ast);\n  }\n\n  compiler.filterNode = function(context, node) {\n    return compiler.optimizers[node[0]](context, node);\n  };\n\n  compiler.optimizers = {\n    body:      compactBuffers,\n    buffer:    noop,\n    special:   convertSpecial,\n    format:    format,\n    reference: visit,\n    '#':       visit,\n    '?':       visit,\n    '^':       visit,\n    '<':       visit,\n    '+':       visit,\n    '@':       visit,\n    '%':       visit,\n    partial:   visit,\n    context:   visit,\n    params:    visit,\n    bodies:    visit,\n    param:     visit,\n    filters:   noop,\n    key:       noop,\n    path:      noop,\n    literal:   noop,\n    raw:       noop,\n    comment:   nullify,\n    line:      nullify,\n    col:       nullify\n  };\n\n  compiler.pragmas = {\n    esc: function(compiler, context, bodies) {\n      var old = compiler.auto,\n          out;\n      if (!context) {\n        context = 'h';\n      }\n      compiler.auto = (context === 's') ? '' : context;\n      out = compileParts(compiler, bodies.block);\n      compiler.auto = old;\n      return out;\n    }\n  };\n\n  function visit(context, node) {\n    var out = [node[0]],\n        i, len, res;\n    for (i=1, len=node.length; i<len; i++) {\n      res = compiler.filterNode(context, node[i]);\n      if (res) {\n        out.push(res);\n      }\n    }\n    return out;\n  }\n\n  // Compacts consecutive buffer nodes into a single node\n  function compactBuffers(context, node) {\n    var out = [node[0]],\n        memo, i, len, res;\n    for (i=1, len=node.length; i<len; i++) {\n      res = compiler.filterNode(context, node[i]);\n      if (res) {\n        if (res[0] === 'buffer' || res[0] === 'format') {\n          if (memo) {\n            memo[0] = (res[0] === 'buffer') ? 'buffer' : memo[0];\n            memo[1] += res.slice(1, -2).join('');\n          } else {\n            memo = res;\n            out.push(res);\n          }\n        } else {\n          memo = null;\n          out.push(res);\n        }\n      }\n    }\n    return out;\n  }\n\n  var specialChars = {\n    's': ' ',\n    'n': '\\n',\n    'r': '\\r',\n    'lb': '{',\n    'rb': '}'\n  };\n\n  function convertSpecial(context, node) {\n    return ['buffer', specialChars[node[1]], node[2], node[3]];\n  }\n\n  function noop(context, node) {\n    return node;\n  }\n\n  function nullify(){}\n\n  function format(context, node) {\n    if(dust.config.whitespace) {\n      // Format nodes are in the form ['format', eol, whitespace, line, col],\n      // which is unlike other nodes in that there are two pieces of content\n      // Join eol and whitespace together to normalize the node format\n      node.splice(1, 2, node.slice(1, -2).join(''));\n      return node;\n    }\n    return null;\n  }\n\n  function compile(ast, name) {\n    var context = {\n      name: name,\n      bodies: [],\n      blocks: {},\n      index: 0,\n      auto: 'h'\n    },\n    escapedName = dust.escapeJs(name),\n    AMDName = name? '\"' + escapedName + '\",' : '',\n    compiled = 'function(dust){',\n    entry = compiler.compileNode(context, ast),\n    iife;\n\n    if(name) {\n      compiled += 'dust.register(\"' + escapedName + '\",' + entry + ');';\n    }\n\n    compiled += compileBlocks(context) +\n                compileBodies(context) +\n                'return ' + entry + '}';\n\n    iife = '(' + compiled + '(dust));';\n\n    if(dust.config.amd) {\n      return 'define(' + AMDName + '[\"dust.core\"],' + compiled + ');';\n    } else if(dust.config.cjs) {\n      return 'module.exports=function(dust){' +\n             'var tmpl=' + iife +\n             'var f=' + loaderFor().toString() + ';' +\n             'f.template=tmpl;return f}';\n    } else {\n      return iife;\n    }\n  }\n\n  function compileBlocks(context) {\n    var out = [],\n        blocks = context.blocks,\n        name;\n\n    for (name in blocks) {\n      out.push('\"' + name + '\":' + blocks[name]);\n    }\n    if (out.length) {\n      context.blocks = 'ctx=ctx.shiftBlocks(blocks);';\n      return 'var blocks={' + out.join(',') + '};';\n    } else {\n      context.blocks = '';\n    }\n    return context.blocks;\n  }\n\n  function compileBodies(context) {\n    var out = [],\n        bodies = context.bodies,\n        blx = context.blocks,\n        i, len;\n\n    for (i=0, len=bodies.length; i<len; i++) {\n      out[i] = 'function body_' + i + '(chk,ctx){' +\n          blx + 'return chk' + bodies[i] + ';}body_' + i + '.__dustBody=!0;';\n    }\n    return out.join('');\n  }\n\n  function compileParts(context, body) {\n    var parts = '',\n        i, len;\n    for (i=1, len=body.length; i<len; i++) {\n      parts += compiler.compileNode(context, body[i]);\n    }\n    return parts;\n  }\n\n  compiler.compileNode = function(context, node) {\n    return compiler.nodes[node[0]](context, node);\n  };\n\n  compiler.nodes = {\n    body: function(context, node) {\n      var id = context.index++,\n          name = 'body_' + id;\n      context.bodies[id] = compileParts(context, node);\n      return name;\n    },\n\n    buffer: function(context, node) {\n      return '.w(' + escape(node[1]) + ')';\n    },\n\n    format: function(context, node) {\n      return '.w(' + escape(node[1]) + ')';\n    },\n\n    reference: function(context, node) {\n      return '.f(' + compiler.compileNode(context, node[1]) +\n        ',ctx,' + compiler.compileNode(context, node[2]) + ')';\n    },\n\n    '#': function(context, node) {\n      return compileSection(context, node, 'section');\n    },\n\n    '?': function(context, node) {\n      return compileSection(context, node, 'exists');\n    },\n\n    '^': function(context, node) {\n      return compileSection(context, node, 'notexists');\n    },\n\n    '<': function(context, node) {\n      var bodies = node[4];\n      for (var i=1, len=bodies.length; i<len; i++) {\n        var param = bodies[i],\n            type = param[1][1];\n        if (type === 'block') {\n          context.blocks[node[1].text] = compiler.compileNode(context, param[2]);\n          return '';\n        }\n      }\n      return '';\n    },\n\n    '+': function(context, node) {\n      if (typeof(node[1].text) === 'undefined'  && typeof(node[4]) === 'undefined'){\n        return '.b(ctx.getBlock(' +\n              compiler.compileNode(context, node[1]) +\n              ',chk, ctx),' + compiler.compileNode(context, node[2]) + ', {},' +\n              compiler.compileNode(context, node[3]) +\n              ')';\n      } else {\n        return '.b(ctx.getBlock(' +\n            escape(node[1].text) +\n            '),' + compiler.compileNode(context, node[2]) + ',' +\n            compiler.compileNode(context, node[4]) + ',' +\n            compiler.compileNode(context, node[3]) +\n            ')';\n      }\n    },\n\n    '@': function(context, node) {\n      return '.h(' +\n        escape(node[1].text) +\n        ',' + compiler.compileNode(context, node[2]) + ',' +\n        compiler.compileNode(context, node[4]) + ',' +\n        compiler.compileNode(context, node[3]) + ',' +\n        compiler.compileNode(context, node[5]) +\n        ')';\n    },\n\n    '%': function(context, node) {\n      // TODO: Move these hacks into pragma precompiler\n      var name = node[1][1],\n          rawBodies,\n          bodies,\n          rawParams,\n          params,\n          ctx, b, p, i, len;\n      if (!compiler.pragmas[name]) {\n        return '';\n      }\n\n      rawBodies = node[4];\n      bodies = {};\n      for (i=1, len=rawBodies.length; i<len; i++) {\n        b = rawBodies[i];\n        bodies[b[1][1]] = b[2];\n      }\n\n      rawParams = node[3];\n      params = {};\n      for (i=1, len=rawParams.length; i<len; i++) {\n        p = rawParams[i];\n        params[p[1][1]] = p[2][1];\n      }\n\n      ctx = node[2][1] ? node[2][1].text : null;\n\n      return compiler.pragmas[name](context, ctx, bodies, params);\n    },\n\n    partial: function(context, node) {\n      return '.p(' +\n          compiler.compileNode(context, node[1]) +\n          ',ctx,' + compiler.compileNode(context, node[2]) +\n          ',' + compiler.compileNode(context, node[3]) + ')';\n    },\n\n    context: function(context, node) {\n      if (node[1]) {\n        return 'ctx.rebase(' + compiler.compileNode(context, node[1]) + ')';\n      }\n      return 'ctx';\n    },\n\n    params: function(context, node) {\n      var out = [];\n      for (var i=1, len=node.length; i<len; i++) {\n        out.push(compiler.compileNode(context, node[i]));\n      }\n      if (out.length) {\n        return '{' + out.join(',') + '}';\n      }\n      return '{}';\n    },\n\n    bodies: function(context, node) {\n      var out = [];\n      for (var i=1, len=node.length; i<len; i++) {\n        out.push(compiler.compileNode(context, node[i]));\n      }\n      return '{' + out.join(',') + '}';\n    },\n\n    param: function(context, node) {\n      return compiler.compileNode(context, node[1]) + ':' + compiler.compileNode(context, node[2]);\n    },\n\n    filters: function(context, node) {\n      var list = [];\n      for (var i=1, len=node.length; i<len; i++) {\n        var filter = node[i];\n        list.push('\"' + filter + '\"');\n      }\n      return '\"' + context.auto + '\"' +\n        (list.length ? ',[' + list.join(',') + ']' : '');\n    },\n\n    key: function(context, node) {\n      return 'ctx.get([\"' + node[1] + '\"], false)';\n    },\n\n    path: function(context, node) {\n      var current = node[1],\n          keys = node[2],\n          list = [];\n\n      for (var i=0,len=keys.length; i<len; i++) {\n        if (isArray(keys[i])) {\n          list.push(compiler.compileNode(context, keys[i]));\n        } else {\n          list.push('\"' + keys[i] + '\"');\n        }\n      }\n      return 'ctx.getPath(' + current + ', [' + list.join(',') + '])';\n    },\n\n    literal: function(context, node) {\n      return escape(node[1]);\n    },\n    raw: function(context, node) {\n      return \".w(\" + escape(node[1]) + \")\";\n    }\n  };\n\n  function compileSection(context, node, cmd) {\n    return '.' + (dust._aliases[cmd] || cmd) + '(' +\n      compiler.compileNode(context, node[1]) +\n      ',' + compiler.compileNode(context, node[2]) + ',' +\n      compiler.compileNode(context, node[4]) + ',' +\n      compiler.compileNode(context, node[3]) +\n      ')';\n  }\n\n  var BS = /\\\\/g,\n      DQ = /\"/g,\n      LF = /\\f/g,\n      NL = /\\n/g,\n      CR = /\\r/g,\n      TB = /\\t/g;\n  function escapeToJsSafeString(str) {\n    return str.replace(BS, '\\\\\\\\')\n              .replace(DQ, '\\\\\"')\n              .replace(LF, '\\\\f')\n              .replace(NL, '\\\\n')\n              .replace(CR, '\\\\r')\n              .replace(TB, '\\\\t');\n  }\n\n  var escape = (typeof JSON === 'undefined') ?\n                  function(str) { return '\"' + escapeToJsSafeString(str) + '\"';} :\n                  JSON.stringify;\n\n  function renderSource(source, context, callback) {\n    var tmpl = dust.loadSource(dust.compile(source));\n    return loaderFor(tmpl)(context, callback);\n  }\n\n  function compileFn(source, name) {\n    var tmpl = dust.loadSource(dust.compile(source, name));\n    return loaderFor(tmpl);\n  }\n\n  function loaderFor(tmpl) {\n    return function load(ctx, cb) {\n      var fn = cb ? 'render' : 'stream';\n      return dust[fn](tmpl, ctx, cb);\n    };\n  }\n\n  // expose compiler methods\n  dust.compiler = compiler;\n  dust.compile = dust.compiler.compile;\n  dust.renderSource = renderSource;\n  dust.compileFn = compileFn;\n\n  // DEPRECATED legacy names. Removed in 2.8.0\n  dust.filterNode = compiler.filterNode;\n  dust.optimizers = compiler.optimizers;\n  dust.pragmas = compiler.pragmas;\n  dust.compileNode = compiler.compileNode;\n  dust.nodes = compiler.nodes;\n\n  return compiler;\n\n}));\n\nif (typeof define === \"function\" && define.amd && define.amd.dust === true) {\n    define([\"require\", \"dust.core\", \"dust.compile\"], function(require, dust) {\n        dust.onLoad = function(name, cb) {\n            require([name], function() {\n                cb();\n            });\n        };\n        return dust;\n    });\n}\n",
+			"file": "node_modules/dustjs-linkedin/dist/dust-full.js",
+			"file_size": 120415,
+			"file_write_time": 130782696560000000,
+			"settings":
+			{
+				"buffer_size": 120415,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client/lib/bootstrap.css",
+			"settings":
+			{
+				"buffer_size": 147430,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client/components/topbar/topbar.html",
+			"settings":
+			{
+				"buffer_size": 850,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client/core_views/base-content-view-factory.js",
+			"settings":
+			{
+				"buffer_size": 883,
 				"line_ending": "Unix"
 			}
 		},
@@ -368,14 +439,6 @@
 			}
 		},
 		{
-			"file": "config/default.js",
-			"settings":
-			{
-				"buffer_size": 1278,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "client/index.html",
 			"settings":
 			{
@@ -384,34 +447,52 @@
 			}
 		},
 		{
-			"file": "client/components/topbar/topbar.html",
+			"file": "client/urls.js",
 			"settings":
 			{
-				"buffer_size": 855,
+				"buffer_size": 84,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "client/components/display_page/display_content.html",
+			"contents": "Searching 18 files for \"display_content\" (regex)\n0 matches\n\nSearching 18 files for \"display_content\" (regex)\n\n0 matches\n\nSearching 18 files for \"display_\" (regex)\n\n0 matches\n\nSearching 52 files for \"display_\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/display_page/display_content.html:\n    1  <div class=\"starter-template\">\n    2: 	<div id=\"display_content_area\">\n    3  		<div class=\"container\">\n    4  			<h2>Striped Rows</h2>\n    5  			<p>The .table-striped class adds zebra-stripes to a table:</p>\n    6: 			<table class=\"table table-striped\" id=\"display__data_table\">\n    7  				<thead>\n    8  					<tr>\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/index_page/index_content.html:\n    1  <div class=\"starter-template\">\n    2: 	<div id=\"display_content_area\">\n    3  \n    4  		<div class=\"container\">\n\n3 matches across 2 files\n\n\nSearching 52 files for \"index_\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/index.js:\n  157    		}\n  158  			var aboutView = BaseContentViewFactory({\n  159: 				route: 'components/index_page/index_content.html',\n  160  				el: $('#container')\n  161  			});\n\n2 matches in 1 file\n\n\nSearching 57 files for \"index-content-view\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/index.js:\n   77     * Handles View containing Home / index content\n   78     */\n   79:   var IndexContentView = require('./core_views/index-content-view.js');\n   80  \n   81  \n\n1 match in 1 file\n\n\nSearching 57 files for \"index-content-view\" (regex)\n\n0 matches\n\nSearching 57 files for \"IndexContentVidew\" (regex)\n\n0 matches\n\nSearching 57 files for \"IndexContentView\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/routing/router_main.js:\n   23      		this.baseTopbar = this._loadBaseTopbar();\n   24    		}\n   25:   		var indexContentView = new IndexContentView({ el: $('#container') });\n   26    	},\n   27  \n\n2 matches in 1 file\n\n\nSearching 61 files for \"getComponent\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/backbone-app-view.js:\n    1    //Top level view - all others inherit from it\n    2    var BackboneAppView = Backbone.View.extend({\n    3:   	getComponent: function getComponent(route){\n    4      	return $.get(route, function(data) {\n    5        	return data;\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/base-content-view-factory.js:\n    9  \n   10      	render: function render() {\n   11: 				this.getComponent(options.route).then(function(data) {\n   12      			this.$el.html(data);\n   13  				}.bind(this));\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/home-content-view.js:\n    6    	},\n    7    	render: function render() {\n    8: 			this.getComponent('components/forms_page/forms.html').then(function(data){\n    9    			this.$el.html(data);\n   10  			}.bind(this));\n\n4 matches across 3 files\n\n\nSearching 61 files for \"backbone-app-view\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/index.js:\n   63    //*********************************//\n   64    //Top level view - all others inherit from it\n   65:   var BackboneAppView = require('./core_views/backbone-app-view.js');\n   66  \n   67    /**\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/base-content-view-factory.js:\n    1: var BackboneAppView = require('./backbone-app-view.js');\n    2  \n    3  module.exports = function BaseContentViewFactory(options) {\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/bear-display-view.js:\n    1: var BackboneAppView = require('./backbone-app-view.js');\n    2  var BearDisplayDataCollection = require('../collections/bear-display-data-collection.js');\n    3  \n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/home-content-view.js:\n    1: var BackboneAppView = require('./backbone-app-view.js');\n    2  \n    3  module.exports = BackboneAppView.extend({\n\n4 matches across 4 files\n\n\nSearching 62 files for \"loadHTMLSnippetFileIntoEl\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/backbone-view.js:\n   12    	},\n   13  \n   14:   	loadHTMLSnippetFileIntoEl: function loadHTMLSnippetFileIntoEl(route) {\n   15  			console.log('%c\\n\\nBACKBONE-VIEW::: ', style,\n   16  				'ENTERED LOAD_HTML_SNIPPET_FILE_INTO_EL\\n\\n');\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/bear-display-view.js:\n   35  		console.log(route);\n   36  		console.log(this.$el);\n   37: 		this.loadHTMLSnippetFileIntoEl(route);\n   38  		console.log('BearDisplayView::::::::::::::::::::::::::::::: BOTTOM OF render');\n   39  	}\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/topbar-view.js:\n   13  	},\n   14  	render: function render(){\n   15: 		this.loadHTMLSnippetFileIntoEl('/components/topbar/topbar.html')\n   16  	},\n   17  	loadHomeContent: function loadHomeContent(event){\n\n4 matches across 3 files\n\n\nSearching 62 files for \"getComponent\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/backbone-view.js:\n    4    var BackboneAppView = Backbone.View.extend({\n    5  \n    6:   	getComponent: function getComponent(route){\n    7: 			console.log('%c\\n\\nBACKBONE-VIEW:::', style, 'ENTERED GETCOMPONENT\\n\\n');\n    8      	return $.get(route, function(data) {\n    9: 				console.log('%c\\n\\nBACKBONE-VIEW:::', style, 'GETCOMPONENT:: $.get CB\\n\\n');\n   10        	return data;\n   11        }.bind(this));\n   ..\n   15  			console.log('%c\\n\\nBACKBONE-VIEW::: ', style,\n   16  				'ENTERED LOAD_HTML_SNIPPET_FILE_INTO_EL\\n\\n');\n   17: 			this.getComponent(route).then(function(htmlSnippet) {\n   18  				console.log('%c\\n\\nBACKBONE-VIEW:::', style,\n   19: 					' LOAD_HTML_SNIPPET_FILE_INTO_EL:: CB from GETCOMPONENT \\n\\n');\n   20  				this.$el.empty().append(htmlSnippet);\n   21  			}.bind(this));\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/base-content-view-factory.js:\n   13      	render: function render() {\n   14  				console.log('%c\\n\\nBCVF::BASE-CONTENT-VIEW-FACTORY::: ENTERED RENDER\\n\\n',\"color:green\");\n   15: 				this.getComponent(options.route).then(function(data) {\n   16  					console.log('%c\\n\\nBCVF::BASE-CONTENT-VIEW-FACTORY::: RENDER:: ' +\n   17: 						'getComponent cb\\n\\n',\"color:green\");\n   18      			this.$el.html(data);\n   19  				}.bind(this));\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/home-content-view.js:\n    8    		var that = this;\n    9  			console.log('%c\\n\\nHOME-CONTENT-VIEW::: ENTERED RENDER\\n\\n', \"color:blue\");\n   10: 			this.getComponent('components/forms_page/forms.html').then(function(data){\n   11: 				console.log('%c\\n\\nHOME-CONTENT-VIEW::: ENTERED RENDER getComponent CB\\n\\n', \"color:blue\");\n   12    			that.$el.html(data);\n   13  			});\n\n10 matches across 3 files\n\n\nSearching 64 files for \"display_page\" (regex)\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/display_page/display_page.dust:\n   13  		      </tr>\n   14  		    </thead>\n   15: 		    <tbody id=\"display_page_table_data\">\n   16  			    {collHtml}\n   17  		    </tbody>\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/display_page/display_page.html:\n   13  		      </tr>\n   14  		    </thead>\n   15: 		    <tbody id=\"display_page_table_data\">\n   16  			    {collHtml}\n   17  		    </tbody>\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/bear-display-table.js:\n    1  var BearDisplayTable = BackboneAppView.extend({\n    2: 	el: $('#display_page_table_data'),\n    3  	render: function render(){\n    4   		this.loadHTMLSnippetFileIntoEl('components/forms_page/forms.html');\n\n/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/bear-display-view.js:\n    3  var style = 'text-decoration: underline; font-weight: bold; color:Purple ';\n    4  var modNm = '%c\\n\\nBEAR-DISPLAY-VIEW::: ';\n    5: var route = 'components/display_page/display_page.html';\n    6  \n    7  \n    .\n   38  		console.log('displayCollection!');\n   39  		console.log(this.collection);\n   40: 		$('#display_page_table_data').empty();\n   41  \n   42  		this.collHtml = this.collection.reduce(function(memo, item){\n   ..\n   74  			that.template = _.template(htmlSnippet);\n   75  			that.$el.html(that.template({ collHtml: that.collHtml }));\n   76: //			$('#display_page_table_data').html(this.collHtml);\n   77  		});\n   78  		console.log(modNm + '::::::::::::::::::::::::::::::: BOTTOM OF render');\n\n7 matches across 4 files\n",
 			"settings":
 			{
-				"buffer_size": 1015,
+				"buffer_size": 8542,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "client/core_views/backbone-view.js",
+			"settings":
+			{
+				"buffer_size": 1114,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "client/components/forms_page/forms.js",
+			"file": "client/collections/bear-display-data-collection.js",
 			"settings":
 			{
-				"buffer_size": 958,
+				"buffer_size": 1703,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "server/microservices/api/form-handler-api.js",
+			"file": "client/routing/router_main.js",
 			"settings":
 			{
-				"buffer_size": 6621,
+				"buffer_size": 1876,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client/core_views/topbar-view.js",
+			"settings":
+			{
+				"buffer_size": 1081,
 				"line_ending": "Unix"
 			}
 		},
@@ -424,18 +505,34 @@
 			}
 		},
 		{
-			"file": "client/components/index_page/index_content.html",
+			"file": "client/components/display_page/display_page.html",
 			"settings":
 			{
-				"buffer_size": 990,
+				"buffer_size": 474,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/andfaulkner/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+			"file": "server/microservices/api/form-handler-api.js",
 			"settings":
 			{
-				"buffer_size": 693,
+				"buffer_size": 7510,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client/index.js",
+			"settings":
+			{
+				"buffer_size": 559,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "client/core_views/bear-display-table.js",
+			"settings":
+			{
+				"buffer_size": 227,
 				"line_ending": "Unix"
 			}
 		}
@@ -660,28 +757,38 @@
 	"expanded_folders":
 	[
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/.build/collections",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/index_page",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/logs",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/tablespace"
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/display_page",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/lib",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/dustjs-linkedin",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/node_modules/dustjs-linkedin/dist"
 	],
 	"file_history":
 	[
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/display_page/display_page.dust",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/core_views/home-content-view.js",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/config/default.js",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/models/bear-dummy-data.js",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/models/bear-display-data.js",
+		"/home/andfaulkner/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/api/form-handler-api.js",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/forms_page/forms.js",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/doc/display_content.html",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/topbar/topbar.html",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/core_views/backbone-app-view.js",
+		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/core_views/base-content-view-factory.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/display_page/display_content.html",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/index_page/index_content.html",
 		"/home/andfaulkner/.config/sublime-text-3/Packages/User/HTML.sublime-settings",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/topbar/topbar.html",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/webpack.config.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/index.html",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/debug/winston-logger.js",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/config/default.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/launch-seneca.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/.gitignore",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/data-entities/data-entity-test-1.js",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/api/form-handler-api.js",
-		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/forms_page/forms.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/client/components/forms_page/forms.html",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/debug/uncaught-error-handler.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/[1m[32m[40mseneca[49m[39m[22m",
@@ -691,7 +798,6 @@
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/api/math_api.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/api/meta_api.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/gulpfile.js",
-		"/home/andfaulkner/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/sql_dump.sql",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/server/microservices/express/express-plugin.js",
 		"/home/andfaulkner/Projects/testbed/testbed-seneca--4/data/test.sql.sh",
@@ -788,14 +894,7 @@
 		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/docs/redux_tutorial.txt",
 		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/docs/pgsql-postgres-handyCmds.txt",
 		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/docs/TODO__new_modules.txt",
-		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/docs/IDEAS.txt",
-		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/docs/todo_other_1.txt",
-		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/client/js/page4js.js",
-		"/home/andfaulkner/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
-		"/home/andfaulkner/.config/sublime-text-3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
-		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/client/html/redux-1.html",
-		"/home/andfaulkner/.config/sublime-text-3/Packages/User/snippets/react/react--comment--component-header.sublime-snippet",
-		"/home/andfaulkner/.config/sublime-text-3/Packages/User/snippets/react/react--component-mounter--(mounts_another_component).sublime-snippet"
+		"/home/andfaulkner/Projects/testbed/express-backbone-testbed-3/docs/IDEAS.txt"
 	],
 	"find":
 	{
@@ -806,6 +905,7 @@
 		"height": 93.0,
 		"where_history":
 		[
+			"<project>,-node_modules/**,-.build/**,-gulpfile.js",
 			"<project>,-node_modules/**,-.build/**,*.js,-gulpfile.js",
 			"<project>,-node_modules/**,-.build/**,*.js",
 			"<project>,-node_modules/**,-.build/**",
@@ -843,6 +943,42 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"display_page",
+			"grab",
+			"data",
+			"'%c\\n\\nBACKBONE-VIEW:::'",
+			"'%c\\n\\nBACKBONE-VIEW::: '",
+			"getComponent",
+			"loadHTMLSnippetFileIntoEl",
+			"loadHome",
+			"flipToIndex",
+			"_loadBaseTopbar",
+			"BearDisplayDataCollection",
+			"collectionData",
+			"model",
+			"BearDisplayDataCollection",
+			"white,",
+			"asdfghasdf",
+			"white",
+			"black",
+			"data",
+			"backbone-app-view",
+			"data",
+			"getComponent",
+			"return_bear_display_collection",
+			"return_bear_display_collection_cb",
+			"form_handler_cb",
+			"BearData",
+			"indexContentView",
+			"IndexContentView",
+			"IndexContentVidew",
+			"index-content-view",
+			"BackboneAppView",
+			"index_",
+			"display_",
+			"display_content",
+			"return_bear",
+			"BaseContentViewFactory",
 			"Object.keys\\(to",
 			"meekaPeekaBearData",
 			"load",
@@ -934,43 +1070,7 @@
 			"name1",
 			"phone1",
 			"guid1",
-			"emal1",
-			"name1",
-			"\"myTable\"",
-			"dbname",
-			"PATH_TO_TABLESPACE",
-			"tablespace_path",
-			"test_entity_1",
-			"iii",
-			"new_entity",
-			"cmd1",
-			"cmd2",
-			"someRole",
-			"add_roleMathCmdSum_cb",
-			"log",
-			"ret-random",
-			"ret.?ran",
-			"ret",
-			"block",
-			"log.block",
-			"block",
-			"test_plugin",
-			"pretty",
-			"log_msg",
-			"data.?sent",
-			"data\\ssent",
-			"data sent",
-			"DATA.?TO.?LOG",
-			"DATA TO LOG",
-			"DATA.TO.LOG",
-			"DATA TO LOG",
-			"plugin",
-			", ",
-			"[^a-zA-Z]sum[^a-zA-Z]",
-			"sum",
-			"false",
-			"caller$compact",
-			"caller$clean"
+			"emal1"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1052,19 +1152,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "client/index.js",
+					"file": "client/core_views/bear-display-view.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4795,
+						"buffer_size": 2517,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1349,
-								1349
+								306,
+								306
 							]
 						],
 						"settings":
@@ -1072,36 +1172,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1112,11 +1187,21 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
@@ -1126,13 +1211,29 @@
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
-								"bh_regex_content"
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
+							"open_with_edit": true,
 							"side_bar_folders_auto_load_folder": 1,
 							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 376.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
@@ -1140,6 +1241,360 @@
 				},
 				{
 					"buffer": 1,
+					"file": "client/models/bear-display-data.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 863,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								425,
+								425
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 156.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 2,
+					"file": "webpack.config.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2277,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2184,
+								2184
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 910.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "node_modules/dustjs-linkedin/dist/dust-full.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 120415,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								29,
+								29
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "client/lib/bootstrap.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 147430,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "client/components/topbar/topbar.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 850,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								394,
+								394
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "client/core_views/base-content-view-factory.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 883,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								785,
+								785
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "server/microservices/launch-seneca.js",
 					"semi_transient": false,
 					"settings":
@@ -1160,36 +1615,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1200,11 +1630,21 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
@@ -1214,7 +1654,22 @@
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
-								"bh_regex_content"
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"side_bar_folders_auto_load_folder": 1,
 							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
@@ -1223,105 +1678,11 @@
 						"translation.y": 429.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "config/default.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1278,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1075,
-								1075
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
-							],
-							"side_bar_folders_auto_load_folder": 1,
-							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 397.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
-				{
-					"buffer": 3,
+					"buffer": 8,
 					"file": "client/index.html",
 					"semi_transient": false,
 					"settings":
@@ -1333,8 +1694,8 @@
 						"selection":
 						[
 							[
-								676,
-								676
+								1052,
+								1052
 							]
 						],
 						"settings":
@@ -1342,36 +1703,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1382,11 +1718,21 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
@@ -1396,34 +1742,49 @@
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
-								"bh_regex_content"
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"side_bar_folders_auto_load_folder": 1,
 							"syntax": "Packages/HTML/HTML.tmLanguage",
 							"word_wrap": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 195.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "client/components/topbar/topbar.html",
+					"buffer": 9,
+					"file": "client/urls.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 855,
+						"buffer_size": 84,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								588,
-								588
+								62,
+								62
 							]
 						],
 						"settings":
@@ -1431,36 +1792,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1471,240 +1807,306 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
-							],
-							"side_bar_folders_auto_load_folder": 1,
-							"syntax": "Packages/HTML/HTML.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "client/components/display_page/display_content.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1015,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								773,
-								773
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
-				{
-					"buffer": 6,
-					"file": "client/components/forms_page/forms.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 958,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								903,
-								903
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
 								"bh_c_define",
 								"bh_c_define_center",
 								"bh_c_define_open",
 								"bh_c_define_close",
 								"bh_c_define_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
 								"bh_tag",
 								"bh_tag_center",
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
 								"bh_default_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content"
-							],
-							"side_bar_folders_auto_load_folder": 1,
-							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "server/microservices/api/form-handler-api.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6621,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6339,
-								6339
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_regex",
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
 								"bh_regex_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
 								"bh_square",
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
 								"bh_square_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"open_with_edit": true,
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8542,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										379,
+										387
+									],
+									[
+										589,
+										597
+									],
+									[
+										805,
+										813
+									],
+									[
+										1102,
+										1108
+									],
+									[
+										1113,
+										1119
+									],
+									[
+										1449,
+										1467
+									],
+									[
+										1856,
+										1872
+									],
+									[
+										1879,
+										1895
+									],
+									[
+										2225,
+										2237
+									],
+									[
+										2248,
+										2260
+									],
+									[
+										2511,
+										2523
+									],
+									[
+										2782,
+										2794
+									],
+									[
+										3215,
+										3232
+									],
+									[
+										3402,
+										3419
+									],
+									[
+										3635,
+										3652
+									],
+									[
+										3899,
+										3916
+									],
+									[
+										4188,
+										4213
+									],
+									[
+										4224,
+										4249
+									],
+									[
+										4542,
+										4567
+									],
+									[
+										4823,
+										4848
+									],
+									[
+										5188,
+										5200
+									],
+									[
+										5211,
+										5223
+									],
+									[
+										5296,
+										5308
+									],
+									[
+										5422,
+										5434
+									],
+									[
+										5643,
+										5655
+									],
+									[
+										5803,
+										5815
+									],
+									[
+										6157,
+										6169
+									],
+									[
+										6300,
+										6312
+									],
+									[
+										6621,
+										6633
+									],
+									[
+										6757,
+										6769
+									],
+									[
+										7087,
+										7099
+									],
+									[
+										7331,
+										7343
+									],
+									[
+										7570,
+										7582
+									],
+									[
+										7968,
+										7980
+									],
+									[
+										7981,
+										7993
+									],
+									[
+										8119,
+										8131
+									],
+									[
+										8374,
+										8386
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								6629,
+								6629
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
 								"bh_tag",
 								"bh_tag_center",
 								"bh_tag_open",
 								"bh_tag_close",
 								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
 								"bh_default_close",
-								"bh_default_content"
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
-							"side_bar_folders_auto_load_folder": 1,
-							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+							"default_dir": "/home/andfaulkner/Projects/testbed/testbed-seneca--4",
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 14,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1140.0,
+						"translation.y": 2717.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 16,
 					"type": "text"
 				}
 			]
@@ -1714,7 +2116,368 @@
 			"sheets":
 			[
 				{
-					"buffer": 8,
+					"buffer": 11,
+					"file": "client/core_views/backbone-view.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1114,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								449,
+								449
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "client/collections/bear-display-data-collection.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1703,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1302,
+								1302
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"open_with_edit": true,
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 390.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 13,
+					"file": "client/routing/router_main.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1876,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1154,
+								1154
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"open_with_edit": true,
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 312.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "client/core_views/topbar-view.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1081,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								936,
+								936
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"open_with_edit": true,
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
 					"file": "client/components/forms_page/forms.html",
 					"semi_transient": false,
 					"settings":
@@ -1726,8 +2489,8 @@
 						"selection":
 						[
 							[
-								624,
-								624
+								503,
+								503
 							]
 						],
 						"settings":
@@ -1735,36 +2498,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1775,11 +2513,21 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
@@ -1789,7 +2537,22 @@
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
-								"bh_regex_content"
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"side_bar_folders_auto_load_folder": 1,
 							"syntax": "Packages/HTML/HTML.tmLanguage",
@@ -1799,24 +2562,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "client/components/index_page/index_content.html",
+					"buffer": 16,
+					"file": "client/components/display_page/display_page.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 990,
+						"buffer_size": 474,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								990,
-								990
+								410,
+								410
 							]
 						],
 						"settings":
@@ -1824,27 +2587,27 @@
 							"syntax": "Packages/HTML/HTML.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 156.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "/home/andfaulkner/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+					"buffer": 17,
+					"file": "server/microservices/api/form-handler-api.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 693,
+						"buffer_size": 7510,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								690,
-								690
+								6816,
+								6816
 							]
 						],
 						"settings":
@@ -1852,36 +2615,11 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
 								"bh_curly",
 								"bh_curly_center",
 								"bh_curly_open",
 								"bh_curly_close",
 								"bh_curly_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
 								"bh_single_quote",
 								"bh_single_quote_center",
 								"bh_single_quote_open",
@@ -1892,11 +2630,21 @@
 								"bh_unmatched_open",
 								"bh_unmatched_close",
 								"bh_unmatched_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
 								"bh_default",
 								"bh_default_center",
 								"bh_default_open",
@@ -1906,16 +2654,208 @@
 								"bh_regex_center",
 								"bh_regex_open",
 								"bh_regex_close",
-								"bh_regex_content"
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
 							],
 							"side_bar_folders_auto_load_folder": 1,
-							"syntax": "Packages/Better JavaScript/JSON.tmLanguage"
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 249.0,
+						"translation.y": 1833.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "client/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 559,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								383,
+								383
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "client/core_views/bear-display-table.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 227,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								186,
+								186
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_unmatched_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_round_content",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_square_content",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_angle_content"
+							],
+							"open_with_edit": true,
+							"side_bar_folders_auto_load_folder": 1,
+							"syntax": "Packages/Babel/JavaScript (Babel).tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
 					"type": "text"
 				}
 			]
@@ -1961,13 +2901,13 @@
 		"cols":
 		[
 			0.0,
-			0.486089790587,
+			0.529674938034,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
-			0.520429009193,
+			0.453879996884,
 			1.0
 		]
 	},
@@ -2018,7 +2958,7 @@
 		],
 		"width": 570.0
 	},
-	"selected_group": 2,
+	"selected_group": 1,
 	"settings":
 	{
 	},
@@ -2026,7 +2966,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 161.0,
+	"side_bar_width": 225.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

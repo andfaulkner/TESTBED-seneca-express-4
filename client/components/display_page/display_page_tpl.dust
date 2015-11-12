@@ -1,9 +1,9 @@
 <div class="starter-template">
 	<div id="display_content_area">
-
 		<div class="container">
 		  <h2>Striped Rows</h2>
 		  <p>The .table-striped class adds zebra-stripes to a table:</p>
+
 		  <table class="table table-striped">
 		    <thead>
 		      <tr>
@@ -13,9 +13,12 @@
 		      </tr>
 		    </thead>
 		    <tbody id="display_page_table_data">
-			  {collHtml}
+
+			    {collHtml|s}
+
 		    </tbody>
 		  </table>
+
 		</div>
   </div>
 </div>

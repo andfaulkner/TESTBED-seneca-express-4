@@ -12,13 +12,17 @@ var BackboneAppView = Backbone.View.extend({
     });
 	},
 
-	loadHTMLSnippetFileIntoEl: function loadHTMLSnippetFileIntoEl(route) {
+	loadHTMLSnippetFileIntoEl: function loadHTMLSnippetFileIntoEl(route, noRender, cb) {
 		var that = this;
 		console.log(fileInfo, style, 'ENTERED loadHTMLSnippetFileIntoEl\n\n');
 		this.getComponent(route).then(function(htmlSnippet) {
+			if (that.noRender) {
+				return (cb) ? cb(htmlSnippet) : htmlSnippet;
+			}
 			console.log(fileInfo, style, 'loadHTMLSnippetFileIntoEl:: getcomponent CB\n\n');
 			that.$el.empty();
 			that.$el.html(htmlSnippet);
+			return (cb) ? cb(htmlSnippet) : htmlSnippet;
 		});
 	},
 
