@@ -15,9 +15,32 @@ var BearDisplayView = BackboneAppView.extend({
 		this.render();
 	},
 
+	_html: {
+		td: function htmlCol(str){
+			return '<td>' + str + '</td>';
+		}
+	},
+
 	displayCollection: function(){
 		console.log('%c\n\nBEAR-DISPLAY-VIEW::: ENTERED DISPLAYCOLLECTION\n\n', style);
 		console.log('displayCollection!');
+		console.log(this.collection);
+		$('#display_page_table_data').empty();
+		$('#display_page_table_data')
+			.html(this.collection.reduce(function(memo, item){
+				memo = memo || '';
+				console.log('memo');
+				console.log(memo);
+				console.log('item');
+				console.log(item);
+				return memo + '<tr>' +
+					'<td>' + item.get('firstName') + '</td>' +
+					'<td>' + item.get('lastName') + '</td>' +
+					'<td>' + item.get('favoriteBear') + '</td>' +
+					'</tr>';
+		}));
+		// console.log(htmlStr);
+		// this._createRow();
 	},
 
 	show: function(model){

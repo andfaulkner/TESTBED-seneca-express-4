@@ -50,6 +50,9 @@ var BearDisplayDataCollection = Backbone.Collection.extend({
 	},
 	handleNewData: function handleNewData(){
 		console.log('handleNewData');
+	},
+	initialize: function initialize(){
+		this.fetch();
 	}
 });
 
