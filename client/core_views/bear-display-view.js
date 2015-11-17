@@ -37,7 +37,7 @@ var BearDisplayView = BackboneAppView.extend({
 			return memo + '<tr>' +
 				'<td>' + item.get('firstName') + '</td>' +
 				'<td>' + item.get('lastName') + '</td>' +
-				'<td>' + item.get('favoriteBear') + '</td>' +
+				'<td>' + item.get('roles') + '</td>' +
 				'</tr>';
 		});
 		this.render();

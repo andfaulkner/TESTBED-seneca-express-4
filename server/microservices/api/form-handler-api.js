@@ -1,14 +1,26 @@
 var log = require('server/debug/winston-logger')('server/microservices/api/form-handler-api');
+var bookshelf = require('../../data/bookshelf.js');
+
+var StarterDataModel = bookshelf.Model.extend({
+	tableName: 'starter_data',
+	idAttribute: 'starter_id',
+	roles: function(){
+		return this.belongsToMany(Role);
+	}
+});
+
+var Role = bookshelf.Model.extend({
+	tableName: 'roles',
+	idAttribute: 'role_id',
+	starterDataModels: function(){
+		return this.belongsToMany(StarterDataModel);
+	}
+});
 
 module.exports = function formHandlerAPI_SenecaPlugin(options) {
 
     this.add('role:api,cmd:form_handler', save_form_data_cb);
-    this.add('role:api,cmd:return_bear_data', return_bear_data_cb);
-    this.add('role:api,cmd:return_bear', return_bear_cb);
     this.add('role:api,cmd:return_bear_display_collection', return_bear_display_collection_cb);
-    this.add('role:api,cmd:form_handler_2', form_handler_2_cb);
-    this.add('role:api,cmd:form_handler_3', form_handler_3_cb);
-
 
     this.act('role:web', {
         use: {
@@ -16,14 +28,7 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
             pin: 'role:api,cmd:*',
             map: {
                 'form_handler': { GET: true, POST: true },
-                'return_bear_data': { GET: true, POST: true },
-                'return_bear': {
-                		GET: true, POST: true,
-                		alias:'/returnbear/:firstNamePath'
-                },
-                'return_bear_display_collection': { GET: true, POST: true },
-                'form_handler_2': { GET: true, POST: true },
-                'form_handler_3': true //GET by default
+                'return_bear_display_collection': { GET: true, POST: true }
             }
         }}
     );
@@ -36,152 +41,57 @@ module.exports = function formHandlerAPI_SenecaPlugin(options) {
      * @return {[type]}            [description]
      */
     function save_form_data_cb(msg, callback){
-    		log.info('form handler cb ran!');
+    	var roles = _.map(msg.req$.body.roles.split(','), _.trim);
 
-    		log.heading('request messages - with log');
-    		log.dir('info', msg);
+    	new Role().fetchAll().then(function(roleColl){
+    		var withoutRolesSpread = _.spread(_.partial(_.without, roles));
+				var rolesToAdd = (roleColl)
+					? withoutRolesSpread(_.uniq(roleColl.pluck('role')))
+    			: roles;
+				async.eachSeries(rolesToAdd, function(role, next){
+					new Role({ role: role }).save().then(function(){
+						next(null);
+					});
+				}, function(err){
+					return;
+				});
 
-    		log.heading('request message - with log');
-    		log.dir(msg.req$.body);
+    	}).then(function(){
+	      new StarterDataModel({
+	      	first_name: msg.req$.body.name.first,
+	      	last_name: msg.req$.body.name.last,
+	      	colour: msg.req$.body.colour,
+	      	favorite_bear: msg.req$.body.favorite_bear,
+	      	rar: msg.req$.body.rar,
 
-    		log.heading('request message - body - with console');
-    		console.dir(msg.req$.body);
-
-    		log.heading('request message - body keys');
-    		console.log(Object.keys(msg.req$.body));
-
-    		log.verbose(Object.keys(msg));
-    		log.silly(arguments);
-        //operations here
-
-				var starter_data = this.make('starter_data');
-
-				starter_data.first_name = msg.req$.body.name.first;
-				starter_data.last_name = msg.req$.body.name.last;
-				starter_data.colour = msg.req$.body.colour;
-				starter_data.favorite_bear = msg.req$.body.favorite_bear;
-				starter_data.rar = msg.req$.body.rar;
-
-        starter_data.save$(function(err, starter_data_ret) {
-	    		log.heading('starter_data_ret object returned after data save:::');
-        	console.log(starter_data_ret);
-        	console.log('\n\nstarter_data_ret object output: ');
-        	console.dir(starter_data_ret);
-        	console.log('\n\nlog$ function source: ');
-        	console.log(starter_data_ret.log$.toString());
-        	console.log('\n\nprivate$.seneca.log function (as called by log$) source: ');
-        	console.log(starter_data_ret.private$.seneca.log.toString());
-        	console.log('\n\nprivate$.seneca object: ');
-        	console.dir(starter_data_ret.private$.seneca);
-        	console.log('\n\nprivate$.seneca.delegate function source: ');
-        	console.log(starter_data_ret.private$.seneca.delegate.toString());
-        	console.log('####################### END starter_data #######################\n\n');
-
-        	console.log('###################################################################');
-        	console.log('this.res and this.res$ are not defined');
-        	console.log('this.load$; and Object.keys(this.context) are undefined');
-        	console.log(Object.keys(this));
-        	console.log('Object.keys(this.fixedargs)');
-        	console.log(Object.keys(this.fixedargs));
-        	console.log('Object.keys(this.fixedargs.res$)');
-        	console.log(Object.keys(this.fixedargs.res$));
-
+	      }).save().then(function(model){
+	      	console.log('model saved!');
+	      	console.dir(model);
 	        callback(null, { some_key: 'some_result'});
-        });
-    }
-
-    /**
-     * Returns bear data from the server to the client
-     * @param  {String}   msg      Seneca msg
-     * @param  {Function} callback Returns data to client.
-     */
-    function return_bear_data_cb(msg, callback){
-    	var toLoadStarterData = this.make('starter_data');
-
-    	//Rules of loading: exact matches on datatype & data value work
-    	toLoadStarterData.load$({first_name:'meeka'}, _.partial(console.log, null));
-
-    	//Blank queries work...if there's blank data in that spot
-    	toLoadStarterData.load$({first_name:''}, _.partial(console.log, null));
-
-    	//No partial matches
-    	toLoadStarterData.load$({first_name:'Mee'}, _.partial(console.log, null));
-
-    	//No directly querying the name of the entity
-    	toLoadStarterData.load$('starter_data', _.partial(console.log, null));
-
-    	console.log('Querying on non-existent columns in the db will return errors');
-    	//Querying on non-existent columns in the db will return errors
-    	// toLoadStarterData.load$({'gingaewgf': 'vregknerg'}, _.partial(console.log, null));
-
-    	console.log('You cannot query the entity using zone, base, or name');
-    	//You cannot query the entity using zone, base, or name
-    	// toLoadStarterData.load$({'zone': 'starter_data'}, _.partial(console.log, null));
-    	// toLoadStarterData.load$({'base': 'starter_data'}, _.partial(console.log, null));
-    	// toLoadStarterData.load$({'name': 'starter_data'}, _.partial(console.log, null));
-
-    	//Rules of loading: cannot use wildcards
-    	console.log('No wildcards allowed');
-    	toLoadStarterData.load$({first_name:'*'}, _.partial(console.log, null));
-    	toLoadStarterData.load$('*', _.partial(console.log, null));
-
-    	console.log('querying { *: * } doesn\'t work. It\'s not SQL');
-
-    	//Rules of loading: no wildcards. This counts too, and will not work:
-    	// toLoadStarterData.load$({'*': '*'}_.partial(console.log, null));
-
-			//Identifies the zone/base/name properties, w/ - as placeholders.
-			//e.g. -/-/starter_data is provided by this specific entity object
-			console.log(toLoadStarterData.entity$);
-
-			//Returns the entity as an object. E.g.:
-			// { 'entity$': { zone: undefined, base: undefined, name: 'starter_data' } }
-			log.block('toLoadStarterData.data$', toLoadStarterData.data$());
-
-			// //empty queries, however, act as wildcards
-			toLoadStarterData.list$({}, _.partial(console.log, null));
-
-			console.log('right before rar colon t section');
-    	toLoadStarterData.load$({rar:true}, function(err, list){
-    		console.log(list);
-				callback(null, list);
+	      });
     	});
     }
 
-
     /**
-     * Returns bear data from client to server, for display
-     * @param  {Object}   msg      Seneca args
-     * @param  {Function} callback Sends data to server
+     * Send back ALL the data.
+     * @param  {[type]}   msg      [description]
+     * @param  {Function} callback [description]
+     * @return {[type]}            [description]
      */
-    function return_bear_cb(msg, callback){
-    	var toLoadStarterData = this.make('starter_data');
-    	console.log(msg.firstNamePath);
-			toLoadStarterData.load$({ first_name: msg.firstNamePath }, function(err, data){
-				callback(null, _.omit(data, 'entity$'));
-			});
-    }
-
-    //Send back ALL the data.
     function return_bear_display_collection_cb(msg, callback){
-    	console.log('return_bear_display_collection_cb called!');
-    	var toLoadStarterData = this.make('starter_data');
-    	console.log('return_bear_display_collection_cb called!');
-    	toLoadStarterData.list$({ }, function(err, data) {
-    		console.log(data);
-    		callback(null, _.omit(data, 'entity$'));
-    	});
-    }
-
-
-    function form_handler_2_cb(msg, callback){
-        //operations here
-        callback(null, { some_key: 'some_result'});
-    }
-
-
-    function form_handler_3_cb(msg, callback){
-        //operations here
-        callback(null, { some_key: 'some_result'});
+			new StarterDataModel().fetchAll()
+				.then(function(data){
+					var finalDataObj = _.reduce(data.models, function(outputData, collItem){
+						outputData.push({
+							firstName: collItem.get('first_name'),
+							lastName: collItem.get('last_name'),
+							colour: collItem.get('colour'),
+							favoriteBear: collItem.get('favorite_bear'),
+							rar: collItem.get('rar') || false
+						});
+						return outputData;
+					}, []);
+					callback(null, finalDataObj);
+				});
     }
 };

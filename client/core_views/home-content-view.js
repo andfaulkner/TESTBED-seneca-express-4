@@ -1,4 +1,5 @@
 var BackboneAppView = require('./backbone-view.js');
+var URLs = require('../urls.js');
 
 module.exports = BackboneAppView.extend({
   	events: {
