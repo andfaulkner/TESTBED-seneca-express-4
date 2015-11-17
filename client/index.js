@@ -13,7 +13,6 @@
 
   //Launch the app when the DOM is ready
   $(function(){
-  	console.log('\n\nINDEX.JS::: DOM READY CALLBACK!\n\n');
     new AppRouter();
 		Backbone.history.start()
   });

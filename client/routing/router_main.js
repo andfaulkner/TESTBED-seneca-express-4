@@ -22,7 +22,6 @@ module.exports = Backbone.Router.extend({
 	views: {},
 
 	_loadBaseTopbar: function _loadBaseTopbar(){
-		console.log(modNm + 'ENTERED _LOADBASETOPBAR\n\n', style);
 		return new TopbarView({
 			el: $('#topbar'),
 			router: this
@@ -42,22 +41,16 @@ module.exports = Backbone.Router.extend({
 	},
 
 	flipToIndex: function flipToIndex(){
-		console.log(modNm + 'ENTERED FLIPTOINDEX\n\n', style);
 		this._grabView('homeContentView', HomeContentView);
 	},
 
 	flipToDisplay: function flipToDisplay(e){
-		console.log(_.repeat('^', 200));
-		console.log(modNm + 'ENTERED FLIPTODISPLAY\n\n', style);
 		this._grabView('bearDisplayView', BearDisplayView, {
 			collection: BearDisplayDataCollection
 		});
-		console.log(modNm + 'fillToDisplay:: bearDisplayView:', style);
-		console.log(this.views.bearDisplayView);
 	},
 
 	other: function other(otherdata){
 		console.log(modNm + 'ENTERED other\n\n', style);
-		console.log(otherdata);
 	}
 });

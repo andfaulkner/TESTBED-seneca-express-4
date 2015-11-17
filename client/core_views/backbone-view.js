@@ -5,30 +5,24 @@ var fileInfo = '%c\n\nBACKBONE-VIEW::: ';
 var BackboneAppView = Backbone.View.extend({
 
 	getComponent: function getComponent(route){
-		console.log(fileInfo, style, 'ENTERED GETCOMPONENT\n\n');
   	return $.get(route, function(component) {
-			console.log(fileInfo, style, 'GETCOMPONENT:: $.get CB\n\n');
     	return component;
     });
 	},
 
 	loadHTMLSnippetFileIntoEl: function loadHTMLSnippetFileIntoEl(route, noRender, cb) {
 		var that = this;
-		console.log(fileInfo, style, 'ENTERED loadHTMLSnippetFileIntoEl\n\n');
 		this.getComponent(route).then(function(htmlSnippet) {
 			if (that.noRender) {
 				return (cb) ? cb(htmlSnippet) : htmlSnippet;
 			}
-			console.log(fileInfo, style, 'loadHTMLSnippetFileIntoEl:: getcomponent CB\n\n');
 			that.$el.empty();
 			that.$el.html(htmlSnippet);
 			return (cb) ? cb(htmlSnippet) : htmlSnippet;
 		});
 	},
 
-
  	initialize: function initialize() {
-		console.log(fileInfo, style, 'ENTERED INITIALIZE\n\n');
  		this.render();
 	}
 });

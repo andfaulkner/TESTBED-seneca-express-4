@@ -17,13 +17,11 @@ var BearDisplayData = Backbone.Model.extend({
 });
 
 var bearData1 = new BearDisplayData({ firstName: 'meeka', id: 'meeka' });
-console.log(bearData1);
 
 // fetches from [root]/api/returnbear/meeka
 bearData1.fetch({
 	success: function bearData1Fetched(data){
 		console.log(modNm + 'ENTERED FETCH SUCCESS CB\n\n', style);
-		console.log(typeof data);
 		console.log(JSON.stringify(data));
 	}
 })
